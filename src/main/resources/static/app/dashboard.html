@@ -7,7 +7,7 @@
 			<div class="font-14 centered"><span>{{ fabber.isNomade ? "Fab Nomade" : fabber.labName }}</span> <span class="color-4" ng-if="user.hasAdminLabRole">[ADMIN_LAB]</span></div>
 		</div>
 		<div layout-gt-sm="column" layout="row">
-			<md-card flex layout="column" layout-align="start center" md-theme="darkPink" class="custom-card-1">
+			<md-card flex layout="column" layout-align="start center" md-theme="darkPink" class="custom-card-1" layout-fill>
 				<div style="height: 67px;">
 					<div class="font-14">Total score</div>
 					<div>
@@ -16,28 +16,36 @@
 				</div>
 			</md-card>
 			<md-card flex layout="column" layout-align="start center" md-theme="darkBlueGrey" class="custom-card-1" layout-fill>
-				<div class="font-14">Coordinator</div>
-				<div>
-					<md-icon md-svg-icon="headset" class="icon-25"></md-icon> <span class="font-18">{{ fabber.coordinatorScore }}</span>
+				<div style="height: 67px;">
+					<div class="font-14">Coordinator</div>
+					<div>
+						<md-icon md-svg-icon="headset" class="icon-25"></md-icon> <span class="font-18">{{ fabber.coordinatorScore }}</span>
+					</div>
 				</div>
 			</md-card>
 			<md-card flex layout="column" layout-align="start center" md-theme="darkBlueGrey" class="custom-card-1" layout-fill>
-				<div class="font-14">Collaborator</div>
-				<div>
-					<md-icon md-svg-icon="puzzle" class="icon-25"></md-icon> <span class="font-18">{{ fabber.collaboratorScore }}</span>
+				<div style="height: 67px;">
+					<div class="font-14">Collaborator</div>
+					<div>
+						<md-icon md-svg-icon="puzzle" class="icon-25"></md-icon> <span class="font-18">{{ fabber.collaboratorScore }}</span>
+					</div>
 				</div>
 			</md-card>
 			<md-card flex layout="column" layout-align="start center" md-theme="darkBlueGrey" class="custom-card-1" layout-fill>
-				<div class="font-14">Replicator</div>
-				<div>
-					<md-icon md-svg-icon="content-copy" class="icon-25"></md-icon> <span class="font-18">{{ fabber.replicatorScore }}</span>
+				<div style="height: 67px;">
+					<div class="font-14">Replicator</div>
+					<div>
+						<md-icon md-svg-icon="content-copy" class="icon-25"></md-icon> <span class="font-18">{{ fabber.replicatorScore }}</span>
+					</div>
 				</div>
 			</md-card>
 			<md-card flex layout="column" layout-align="start center" md-theme="darkLightBlue" class="custom-card-1" layout-fill>
-				<div class="font-14">Goal for this week</div>
-				<md-content class="font-16" style="max-height: 57px;">
-					{{ fabber.weekGoal ? fabber.weekGoal : "" }}
-				</md-content>
+				<div style="height: 67px;">
+					<div class="font-14">Goal for this week</div>
+					<md-content class="font-16" style="max-height: 57px;">
+						{{ fabber.weekGoal ? fabber.weekGoal : "" }}
+					</md-content>
+				</div>
 			</md-card>
 		</div>
 	</div>

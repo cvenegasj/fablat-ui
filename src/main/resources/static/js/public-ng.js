@@ -1,5 +1,6 @@
 var app = angular.module('FabLatAppPublic', [ 'ui.router', 'ngMaterial', 'ng.group', 'satellizer' ]);
-var resourceUri = 'http://127.0.0.1:8081';
+//var resourceUri = 'http://127.0.0.1:5000';
+var resourceUri = 'http://fablatres-env.eba-wpahxg8r.us-east-1.elasticbeanstalk.com';
 
 
 app.config(function($authProvider) {

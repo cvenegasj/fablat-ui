@@ -1,6 +1,7 @@
 package net.fablat.fablatui;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -9,10 +10,19 @@ import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
 import java.util.Map;
+import java.util.UUID;
 
 @RestController
 @Slf4j
 public class UtilController {
+
+    @GetMapping("/healthcheck")
+    public Map<String, Object> healthcheck() {
+        Map<String, Object> model = Map.of(
+                "id", UUID.randomUUID().toString(),
+                "content", "Hello World");
+        return model;
+    }
 
     @PostMapping("/auth/google")
     public Mono<Map> loginCallback(@RequestBody Map body) {

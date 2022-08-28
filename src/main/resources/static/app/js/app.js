@@ -1,18 +1,18 @@
 var app = angular.module('FabLatApp', [ 'ui.router', 'ngMaterial', 'ngMessages', 'angularMoment',
     'vsGoogleAutocomplete', 'ngFileUpload', 'cloudinary', 'satellizer' ]);
 //var uiUri = 'http://127.0.0.1:8080';
-var resourceUri = 'http://127.0.0.1:8081';
+//var resourceUri = 'http://127.0.0.1:5000';
+var resourceUri = 'http://fablatres-env.eba-wpahxg8r.us-east-1.elasticbeanstalk.com';
 //var authUri = 'http://auth-server:9000';
 
 
+// Configuration for Google OAuth2
 app.config(function($authProvider) {
-
     $authProvider.google({
       clientId: '459763149752-fb38phrltn01bkai1qr9kvuncr0n88he.apps.googleusercontent.com',
-      url: '/auth/google',
+      url: '/auth/google', // redirect to Spring endpoint in UI Server
       //redirectUri: window.location.origin,
     });
-
 });
 
 app.config(function($mdThemingProvider, $mdIconProvider, $urlRouterProvider, $stateProvider) {
@@ -391,10 +391,12 @@ app.config(function($mdThemingProvider, $mdIconProvider, $urlRouterProvider, $st
         url: '/workshop/:idWorkshop',
         templateUrl: 'workshop.html',
         resolve: {
-        	redirectIfNotTutor: function($http, $stateParams, $state, $q, $timeout) {
+        	redirectIfNotTutor: function($http, $stateParams, $state, $q, $timeout, authService) {
         		var deferred = $q.defer();
-        		$http.get(`${resourceUri}/auth/workshops/${$stateParams.idWorkshop}`)
-                    .then(function(response) {
+
+        		authService.fetchAuthenticatedUser()
+        		    .then(user => $http.get(`${resourceUri}/auth/workshops/${$stateParams.idWorkshop}/${user.email}`))
+                    .then(response => {
                         // if user is not tutor redirect to external page
                         if (response.data.amITutor) {
                             deferred.resolve();
@@ -407,11 +409,12 @@ app.config(function($mdThemingProvider, $mdIconProvider, $urlRouterProvider, $st
                     });
         		return deferred.promise;
         	},
-        	workshop: function($http, $stateParams) {
-        		return $http.get(`${resourceUri}/auth/workshops/${$stateParams.idWorkshop}`)
-            		.then(function(response) {
-            			return response.data;
-            		});
+        	workshop: function($http, $stateParams, authService) {
+        	    return authService.fetchAuthenticatedUser()
+        	                .then(user => $http.get(`${resourceUri}/auth/workshops/${$stateParams.idWorkshop}/{user.email}`))
+                            .then(response => {
+                                return response.data;
+                            });
         	}
         },
         controller: function($scope, workshop) {
@@ -487,6 +490,7 @@ app.controller('AppCtrl', ['$rootScope', '$http', '$state', '$location', '$windo
 
   authService.fetchAuthenticatedUser()
       .then(user => {
+        console.log("Signed in user:");
         console.log(user);
 
         $rootScope.authenticated = true;
@@ -675,10 +679,10 @@ app.controller('WorkshopsCtrl', function($rootScope, $scope, $http) {
 app.controller('GroupOutCtrl', function($rootScope, $scope, $http, $state, $stateParams, authService) {
 
 	$rootScope.isLoading = true;
-	var user = authService.getAuthenticatedUser();
 
 	// Injects the group object in the parent scope
-	$http.get(`${resourceUri}/auth/groups/${$stateParams.idGroup}/${user.email}`)
+	authService.fetchAuthenticatedUser()
+	    .then(user => $http.get(`${resourceUri}/auth/groups/${$stateParams.idGroup}/${user.email}`))
 		.then(function(response) {
 			$scope.group = response.data;
 		}).finally(function() {
@@ -687,7 +691,8 @@ app.controller('GroupOutCtrl', function($rootScope, $scope, $http, $state, $stat
 		});
 
 	$scope.joinGroup = function(idGroup) {
-		$http.post(`${resourceUri}/auth/groups/${idGroup}/join`)
+	    var user = authService.getAuthenticatedUser();
+		$http.post(`${resourceUri}/auth/groups/${idGroup}/join/${user.email}`)
 			.then(function(response) {
 				$state.go("group.general", { idGroup: idGroup }, {});
 			});
@@ -1224,9 +1229,15 @@ app.controller('GroupSettingsGeneralCtrl', function($rootScope, $scope, $http, $
 
 	$scope.uploadNewPicture = function(file) {
 		$rootScope.isLoading = true;
+		var uploadInProgressToast = $mdToast.simple()
+                                        .textContent('Uploading image. Please wait...')
+                                        .position("bottom right")
+                                        .hideDelay(10000);
+        $mdToast.show(uploadInProgressToast);
 
 		Upload.upload({
-            url: "https://api.cloudinary.com/v1_1/" + cloudinary.config().cloud_name + "/upload",
+            url: `https:\/\/api.cloudinary.com/v1_1/${cloudinary.config().cloud_name}/upload`,
+            skipAuthorization: true, // to not send Authorization header and allow upload to cloudinary server
             data: {
             	upload_preset: cloudinary.config().upload_preset,
             	file: file
@@ -1239,9 +1250,11 @@ app.controller('GroupSettingsGeneralCtrl', function($rootScope, $scope, $http, $
             // update group
     		$http.put(`${resourceUri}/auth/groups/${$scope.group.idGroup}/update-avatar`, {
     			photoUrl: $scope.group.photoUrl
-    		}).then(function successCallback(response) {
+    		})
+    		.then(function successCallback(response) {
     			console.log("URL set in model!");
 
+    			$mdToast.hide(uploadInProgressToast);
     			$rootScope.isLoading = false;
 
     			$mdToast.show(
@@ -1258,7 +1271,7 @@ app.controller('GroupSettingsGeneralCtrl', function($rootScope, $scope, $http, $
 
     			$mdToast.show(
     		      $mdToast.simple()
-    		        .textContent('Something went wrong :(')
+    		        .textContent('Something went wrong during file upload :(')
     		        .position("bottom right")
     		        .hideDelay(1500)
     			);
@@ -1272,7 +1285,7 @@ app.controller('GroupSettingsGeneralCtrl', function($rootScope, $scope, $http, $
 
             $mdToast.show(
   		      $mdToast.simple()
-  		        .textContent('Something went wrong :(')
+  		        .textContent('Something went wrong during file upload :(')
   		        .position("bottom right")
   		        .hideDelay(1500)
   			);
@@ -1280,7 +1293,6 @@ app.controller('GroupSettingsGeneralCtrl', function($rootScope, $scope, $http, $
             var progressPercentage = parseInt(100.0 * evt.loaded / evt.total);
             console.log('progress: ' + progressPercentage + '%');
         });
-
 	};
 
 });
@@ -1542,7 +1554,7 @@ app.controller('SubgroupSettingsGeneralCtrl', function($scope, $http, $state, $m
 });
 
 // Controller in: subgroup.add-workshop.html
-app.controller('SubgroupAddWorkshopCtrl', function($scope, $http, $stateParams, $state, $window, $mdToast) {
+app.controller('SubgroupAddWorkshopCtrl', function($scope, $http, $stateParams, $state, $window, $mdToast, authService) {
 	var self = this;
 
 	$scope.address = {
@@ -1572,17 +1584,17 @@ app.controller('SubgroupAddWorkshopCtrl', function($scope, $http, $stateParams, 
 	$scope.today = new Date();
 
 	$scope.getAppMatches = function(searchText) {
-	    return $http
-	      .get(`${resourceUri}/auth/locations/search/${searchText}`)
-	      .then(function(response) {
-	    	  // Map the response object to the data object.
-	    	  return response.data;
-	      });
+	    return $http.get(`${resourceUri}/auth/locations/search/${searchText}`)
+                  .then(function(response) {
+                      // Map the response object to the data object.
+                      return response.data;
+                  });
 	};
 
 	$scope.submit = function() {
 		console.log($scope._workshop);
 
+		var user = authService.getAuthenticatedUser();
 		// submit data
 		$http.post(`${resourceUri}/auth/workshops/${user.email}`, {
 			name: $scope._workshop.name,
@@ -2117,9 +2129,11 @@ app.factory("authService", function($http, $auth) {
     if (id_token === undefined || id_token === null) {
         console.log("id_token is undefined or null");
         return;
+    } else {
+        console.log("id_token retrieved correctly");
     }
 
-    console.log(id_token);
+    //console.log(id_token);
     var jwtPayload = parseJwt(id_token);
 
     var userApiUrl = `${resourceUri}/auth/fabbers/me/profile/${jwtPayload.email}`;
@@ -2140,8 +2154,8 @@ app.factory("authService", function($http, $auth) {
                 });
     }
     var getAuthenticatedUser = function() {
-                return authenticatedUser;
-              };
+        return authenticatedUser;
+    };
 
     return { fetchAuthenticatedUser: fetchAuthenticatedUser, getAuthenticatedUser: getAuthenticatedUser };
 });
