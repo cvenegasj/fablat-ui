@@ -1,0 +1,59 @@
+<div class="group-general-page md-padding" layout="column" flex ng-controller="GroupGeneralCtrl">
+	
+	<div class="header" layout="row">
+		<md-button ui-sref="group.settings.general({ })">
+			<md-tooltip md-direction="bottom">Change your group's avatar</md-tooltip>
+			<group-avatar group="group" avatar-w="160" avatar-h="115" avatar-font-size="30"></group-avatar>
+		</md-button>
+		<div style="margin-left: 20px;" layout="column" flex>
+			<h3>{{ group.name }}</h3>
+			<div style="margin-top: 10px; white-space: pre-wrap;">{{ group.description | decodeURIComponent }}</div>
+			<div style="margin-top: 10px;" ng-if="group.reunionDay || group.reunionTime || group.mainUrl || group.secondaryUrl">
+				<div ng-if="group.reunionDay || group.reunionTime"><md-icon md-svg-icon="timetable" class="icon-16"></md-icon>Reunions: 
+					<span ng-if="group.reunionDay">{{ group.reunionDay + "S - "}}</span>
+					<span ng-if="group.reunionTime">{{ group.reunionTime }}</span>
+				</div>
+				<div ng-if="group.mainUrl"><md-icon md-svg-icon="web" class="icon-16"></md-icon>Main URL: <a href="{{ group.mainUrl }}" target="_blank" class="custom-anchor-1">{{ group.mainUrl }}</a></div>
+				<div ng-if="group.secondaryUrl"><md-icon md-svg-icon="web" class="icon-16"></md-icon>Secondary URL: <a href="{{ group.secondaryUrl }}" target="_blank" class="custom-anchor-1">{{ group.secondaryUrl }}</a></div>
+			</div>
+		</div>
+	</div>
+	
+	<div class="members">
+		<div layout="row">
+			<h4>Members</h4>
+		</div>
+		<md-divider></md-divider>
+		<div flex layout="row" layout-wrap style="margin-top: 30px;">
+			<div flex-gt-sm="15" flex="25" style="margin-bottom: 10px;" ng-repeat="item in group.members">
+				<a ui-sref="fabber.groups({ idFabber: item.fabberId })">
+					<user-avatar fabber="item" avatar-w="50" avatar-h="50" avatar-font-size="18"></user-avatar>
+				</a>
+				<div class="font-12 color-2 centered" style="margin-top: 5px;">{{ item.firstName + " " + item.lastName }}</div>
+				<div class="centered" ng-if="item.isCoordinator"><span class="badge-2" md-colors="{background: 'darkLime-background-600'}">coordinator</span></div>
+			</div>
+		</div>
+	</div>
+	
+	<div class="subgroups">
+		<div layout="row">
+			<h4>Subgroups</h4>
+		</div>
+		<md-divider></md-divider>
+		<div layout="row" layout-align="center center" style="margin-top: 10px;">
+			<md-button class="md-raised md-primary md-hue-1" ng-click="addSubgroup($event)">New subgroup</md-button>
+		</div>
+		<div ng-if="group.subGroups.length === 0" class="centered no-data-2" style="margin-top: 10px;">No subgroups created yet.</div>
+		<div flex layout="row" layout-wrap>
+			<md-card class="custom-card-5" md-theme="" flex="20" ng-repeat="item in group.subGroups">
+		    	<md-card-header>
+		        	<md-card-header-text>
+			            <a ui-sref="subgroup.general({ idSubgroup: item.idSubGroup })" class="custom-anchor-1"><span class="md-title">{{ item.name }}</span></a>
+			            <span class="md-subhead font-11">{{ item.membersCount === 1 ? "1 member" : item.membersCount + " members" }}</span>
+		        	</md-card-header-text>
+		        </md-card-header>
+		    </md-card>
+		</div>
+	</div>
+	
+</div>

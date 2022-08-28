@@ -1,0 +1,57 @@
+<div layout="column" ng-controller="GroupOutCtrl">
+	<md-toolbar md-whiteframe="1" md-theme="neutral" class="md-hue-1">
+    	<div class="md-toolbar-tools">
+	    	<h2 md-truncate ng-if="group !== undefined">
+	    		<a ui-sref="groups" class="custom-anchor-1"><span>Groups</span></a>
+	    		<span><md-icon md-font-set="material-icons">keyboard_arrow_right</md-icon></span>
+	    		<span class="uppercase">{{ group.name }}</span>
+	    	</h2>
+		</div>
+	</md-toolbar>
+	<div>
+		<div class="group-general-page md-padding" layout="column" flex ng-cloak>
+			<div class="header" layout="column" layout-align="center center">
+				<div style="margin-bottom: 10px;">
+					<group-avatar group="group" avatar-w="65" avatar-h="65" avatar-font-size="26"></group-avatar>
+				</div>
+				<div>
+					<h3>{{ group.name }}</h3>
+				</div>
+				<div style="margin-bottom: 20px; white-space: pre-wrap;">{{ group.description | decodeURIComponent }}</div>
+				<md-button class="md-raised md-accent" ng-click="joinGroup(group.idGroup)">Join the group</md-button>
+			</div>
+			<div class="members">
+				<div layout="row" layout-align="center center">
+					<h4>Members</h4>
+				</div>
+				<md-divider></md-divider>
+				<div flex layout="row" layout-wrap style="margin-top: 30px;">
+					<div flex-gt-sm="15" flex="25" style="margin-bottom: 10px;" ng-repeat="item in group.members">
+						<a ui-sref="fabber.groups({ idFabber: item.fabberId })">
+							<user-avatar fabber="item" avatar-w="50" avatar-h="50" avatar-font-size="18"></user-avatar>
+						</a>
+						<div class="font-12 color-2 centered" style="margin-top: 5px;">{{ item.firstName + " " + item.lastName }}</div>
+						<div class="centered" ng-if="item.isCoordinator"><span class="badge-2" md-colors="{background: 'darkLime-background-600'}">coordinator</span></div>
+					</div>
+				</div>
+			</div>
+			<div class="subgroups">
+				<div layout="row" layout-align="center center">
+					<h4>Subgroups</h4>
+				</div>
+				<md-divider></md-divider>
+				<div ng-if="group.subGroups.length === 0" class="centered no-data-2" style="margin-top: 10px;">No subgroups created yet.</div>
+				<div flex layout="row" layout-wrap>
+					<md-card class="custom-card-5" md-theme="" flex="20" ng-repeat="item in group.subGroups">
+				    	<md-card-header>
+				        	<md-card-header-text>
+					            <a ui-sref="subgroup.general({ idSubgroup: item.idSubGroup })" class="custom-anchor-1"><span class="md-title">{{ item.name }}</span></a>
+					            <span class="md-subhead font-11">{{ item.membersCount === 1 ? "1 member" : item.membersCount + " members" }}</span>
+				        	</md-card-header-text>
+				        </md-card-header>
+				    </md-card>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>

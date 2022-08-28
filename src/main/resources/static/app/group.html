@@ -1,0 +1,34 @@
+<div layout="column" ng-controller="GroupCtrl" ng-cloak>
+	<md-toolbar md-whiteframe="1" md-theme="neutral" class="md-hue-1">
+    	<div class="md-toolbar-tools">
+	    	<h2 md-truncate>
+	    		<a ui-sref="groups" class="custom-anchor-1"><span>Groups</span></a>
+	    		<span><md-icon md-font-set="material-icons">keyboard_arrow_right</md-icon></span>
+	    		<span class="uppercase">{{ group.name }}</span>
+	    	</h2>
+	    	<span flex></span>
+	    	<!-- <md-button class="md-icon-button" aria-label="More">
+		    	<md-icon md-font-set="material-icons">more_vert</md-icon>
+		    </md-button> -->
+		</div>
+	</md-toolbar>
+	
+	<div layout-xs="column" layout="row">
+		<!-- side nav -->	
+		<div flex="none" class="md-padding" style="margin-top: 10px;">
+			<nav class="custom-sidenav-1">
+				<ul>
+					<li><a ui-sref="group.general" ui-sref-active="active" class="custom-anchor-1">Overview</a></li>
+					<!-- <li><a ui-sref="group.discussion" ui-sref-active="active" class="custom-anchor-1">Discussion</a></li> -->
+					<li><a ui-sref="group.activity" ui-sref-active="active" class="custom-anchor-1">Activity</a></li>
+					<li><a ui-sref="group.members" ui-sref-active="active" class="custom-anchor-1">Members</a></li>
+					<li><a ui-sref="group.subgroups" ui-sref-active="active" class="custom-anchor-1">Subgroups</a></li>
+					<li><a ui-sref="group.settings.general" ui-sref-active="active" class="custom-anchor-1" ng-if="group.amICoordinator">Settings</a></li>
+				</ul>
+			</nav>
+		</div>
+		
+		<!-- main content -->
+		<div ui-view flex></div>
+	</div>	
+</div>

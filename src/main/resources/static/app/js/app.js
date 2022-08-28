@@ -1,0 +1,2159 @@
+var app = angular.module('FabLatApp', [ 'ui.router', 'ngMaterial', 'ngMessages', 'angularMoment',
+    'vsGoogleAutocomplete', 'ngFileUpload', 'cloudinary', 'satellizer' ]);
+//var uiUri = 'http://127.0.0.1:8080';
+var resourceUri = 'http://127.0.0.1:8081';
+//var authUri = 'http://auth-server:9000';
+
+
+app.config(function($authProvider) {
+
+    $authProvider.google({
+      clientId: '459763149752-fb38phrltn01bkai1qr9kvuncr0n88he.apps.googleusercontent.com',
+      url: '/auth/google',
+      //redirectUri: window.location.origin,
+    });
+
+});
+
+app.config(function($mdThemingProvider, $mdIconProvider, $urlRouterProvider, $stateProvider) {
+
+	$mdThemingProvider.theme('default')
+		.primaryPalette('cyan', {
+			'default': '500',
+			'hue-1': '300',
+			'hue-2': '700',
+			'hue-3': '800'
+		})
+		.accentPalette('pink', {
+			'default': '500',
+			'hue-1': '300',
+			'hue-2': '600',
+			'hue-3': '800'
+		})
+		.warnPalette('deep-orange', {
+
+		});
+
+	// Neutral theme
+	$mdThemingProvider.theme('neutral').primaryPalette('grey', {
+		'default': '500',
+		'hue-1': '50',
+		'hue-2': '100',
+		'hue-3': '200'
+	});
+
+	// Dark palettes
+	$mdThemingProvider.theme('darkRed').backgroundPalette('red').dark();
+	$mdThemingProvider.theme('darkPink').backgroundPalette('pink', {
+		'default': '500',
+		'hue-1': '500' }).dark();
+	$mdThemingProvider.theme('darkPurple').backgroundPalette('purple').dark();
+	$mdThemingProvider.theme('darkDeepPurple').backgroundPalette('deep-purple').dark();
+	$mdThemingProvider.theme('darkIndigo').backgroundPalette('indigo').dark();
+	$mdThemingProvider.theme('darkBlue').backgroundPalette('blue').dark();
+	$mdThemingProvider.theme('darkLightBlue').backgroundPalette('light-blue').dark();
+	$mdThemingProvider.theme('darkCyan').backgroundPalette('cyan').dark();
+	$mdThemingProvider.theme('darkTeal').backgroundPalette('teal').dark();
+	$mdThemingProvider.theme('darkGreen').backgroundPalette('green').dark();
+	$mdThemingProvider.theme('darkLightGreen').backgroundPalette('light-green').dark();
+	$mdThemingProvider.theme('darkLime').backgroundPalette('lime').dark();
+	$mdThemingProvider.theme('darkYellow').backgroundPalette('yellow').dark();
+	$mdThemingProvider.theme('darkAmber').backgroundPalette('amber').dark();
+	$mdThemingProvider.theme('darkOrange').backgroundPalette('orange').dark();
+	$mdThemingProvider.theme('darkDeepOrange').backgroundPalette('deep-orange').dark();
+	$mdThemingProvider.theme('darkBrown').backgroundPalette('brown').dark();
+	$mdThemingProvider.theme('darkGrey').backgroundPalette('grey').dark();
+	$mdThemingProvider.theme('darkBlueGrey').backgroundPalette('blue-grey').dark();
+
+	// Normal palettes
+	$mdThemingProvider.theme('lime').backgroundPalette('lime');
+
+	// Iconset
+	$mdIconProvider.defaultIconSet('images/mdi.svg');
+
+    // Routes config
+    $urlRouterProvider.otherwise(function() {
+        return '/';
+    });
+
+    $stateProvider.state({
+        name: 'dashboard',
+        abstract: true,
+        url: '/',
+        templateUrl: 'dashboard.html',
+//        resolve: {
+//            requireAuthentication = function($location, $auth) {
+//                                         if (!$auth.isAuthenticated()) {
+//                                             return $window.location.href = '/';
+//                                         }
+//                                    }
+//        }
+    });
+
+    $stateProvider.state({
+        name: 'dashboard.groups',
+        url: '',
+        templateUrl: 'dashboard.groups.html'
+    });
+
+    $stateProvider.state({
+        name: 'dashboard.general-activity',
+        url: '/general-activity',
+        templateUrl: 'dashboard.general-activity.html'
+    });
+
+    $stateProvider.state({
+        name: 'groups',
+        url: '/groups',
+        templateUrl: 'groups.html'
+    });
+
+    $stateProvider.state({
+        name: 'workshops',
+        url: '/workshops',
+        templateUrl: 'workshops.html'
+    });
+
+    $stateProvider.state({
+        name: 'settings',
+        abstract: true,
+        url: '/settings',
+        templateUrl: 'settings.html',
+        controller: function($scope){
+            $scope.currentNavItem = 'profile';
+        }
+    });
+
+    $stateProvider.state({
+        name: 'settings.profile',
+        url: '/profile',
+        templateUrl: 'settings.profile.html'
+    });
+
+    $stateProvider.state({
+        name: 'settings.password',
+        url: '/password',
+        templateUrl: 'settings.password.html'
+    });
+
+    $stateProvider.state({
+        name: 'fabber',
+        abstract: true,
+        url: '/fabber/:idFabber',
+        templateUrl: 'fabber.html',
+        controller: function($scope) {
+            $scope.currentNavItem = 'groups';
+        }
+    });
+
+    $stateProvider.state({
+        name: 'fabber.groups',
+        url: '',
+        templateUrl: 'fabber.groups.html'
+    });
+
+    $stateProvider.state({
+        name: 'fabber.activity',
+        url: '/activity',
+        templateUrl: 'fabber.activity.html'
+    });
+
+    $stateProvider.state({
+        name: 'group-out',
+        url: '/group-out/:idGroup',
+        templateUrl: 'group-out.html'
+    });
+
+    $stateProvider.state({
+        name: 'subgroup-out',
+        url: '/subgroup-out/:idSubgroup',
+        templateUrl: 'subgroup-out.html'
+    });
+
+    $stateProvider.state({
+        name: 'workshop-out',
+        url: '/workshop-out/:idWorkshop',
+        templateUrl: 'workshop-out.html'
+    });
+
+
+    /*========== group states ==========*/
+    $stateProvider.state({
+        name: 'group',
+        abstract: true,
+        url: '/group/:idGroup',
+        templateUrl: 'group.html',
+        resolve: {
+        	redirectIfNotMember: function($http, $stateParams, $state, $q, $timeout, $rootScope, authService) {
+        		$rootScope.isLoading = true;
+        		var deferred = $q.defer();
+
+        		authService.fetchAuthenticatedUser()
+        		    .then(user => $http.get(`${resourceUri}/auth/groups/${$stateParams.idGroup}/verify-me/${user.email}`))
+	        		.then(response => {
+	        			// if user is not member redirect to external page
+	        			if (response.data.amIMember) {
+	        				deferred.resolve();
+	        			} else {
+	        				$timeout(function () {
+	    				      $state.go("group-out", { idGroup: $stateParams.idGroup }, {});
+	    				    });
+	        				deferred.reject();
+	        			}
+	        		});
+        		return deferred.promise;
+        	},
+        	group: function($http, $stateParams, $rootScope, authService) {
+        	    return authService.fetchAuthenticatedUser()
+        	        .then(user => $http.get(`${resourceUri}/auth/groups/${$stateParams.idGroup}/${user.email}`))
+            		.then(response => {
+            			$rootScope.isLoading = false;
+            			return response.data;
+            		});
+        	}
+        },
+        controller: function($scope, group){
+            $scope.group = group;
+        }
+    });
+
+    $stateProvider.state({
+        name: 'group.general',
+        url: '/general',
+        templateUrl: 'group.general.html',
+
+    });
+
+    $stateProvider.state({
+        name: 'group.discussion',
+        url: '/discussion',
+        templateUrl: 'group.discussion.html'
+    });
+
+    $stateProvider.state({
+        name: 'group.activity',
+        url: '/activity',
+        templateUrl: 'group.activity.html'
+    });
+
+    $stateProvider.state({
+        name: 'group.members',
+        url: '/members',
+        templateUrl: 'group.members.html',
+        controller: function($scope){
+            $scope.currentNavItem = 'members';
+        }
+    });
+
+    $stateProvider.state({
+        name: 'group.subgroups',
+        url: '/subgroups',
+        templateUrl: 'group.subgroups.html',
+        controller: function($scope){
+            $scope.currentNavItem = 'subgroups';
+        }
+    });
+
+    $stateProvider.state({
+        name: 'group.settings',
+        abstract: true,
+        url: '/settings',
+        templateUrl: 'group.settings.html',
+        controller: function($scope){
+            $scope.currentNavItem = 'general';
+        }
+    });
+
+    $stateProvider.state({
+        name: 'group.settings.general',
+        url: '/general',
+        templateUrl: 'group.settings.general.html',
+        controller: function($scope){
+            $scope.currentNavItem = 'general';
+        }
+    });
+
+
+    /*=========== subgroup states ===========*/
+
+    $stateProvider.state({
+        name: 'subgroup',
+        abstract: true,
+        url: '/subgroup/:idSubgroup',
+        templateUrl: 'subgroup.html',
+        resolve: {
+        	redirectIfNotMember: function($http, $stateParams, $state, $q, $timeout, $rootScope, authService) {
+        		$rootScope.isLoading = true;
+        		var deferred = $q.defer();
+
+        		authService.fetchAuthenticatedUser()
+        		    .then(user => $http.get(`${resourceUri}/auth/subgroups/${$stateParams.idSubgroup}/verify-me/${user.email}`))
+                    .then(response => {
+                        // if user is not member redirect to external page
+                        if (response.data.amIMember) {
+                            deferred.resolve();
+                        } else {
+                            $timeout(function () {
+                              $state.go("subgroup-out", { idSubgroup: $stateParams.idSubgroup }, {});
+                            });
+                            deferred.reject();
+                        }
+                    });
+        		return deferred.promise;
+        	},
+        	subgroup: function($http, $stateParams, $rootScope, authService) {
+        	    return authService.fetchAuthenticatedUser()
+        	                .then(user => $http.get(`${resourceUri}/auth/subgroups/${$stateParams.idSubgroup}/${user.email}`))
+        	                .then(function(response) {
+                                $rootScope.isLoading = false;
+                                return response.data;
+                            });
+        	}
+        },
+        controller: function($scope, subgroup){
+            $scope.subgroup = subgroup;
+        }
+    });
+
+    $stateProvider.state({
+        name: 'subgroup.general',
+        url: '/general',
+        templateUrl: 'subgroup.general.html'
+    });
+
+    $stateProvider.state({
+        name: 'subgroup.discussion',
+        url: '/discussion',
+        templateUrl: 'subgroup.discussion.html'
+    });
+
+    $stateProvider.state({
+        name: 'subgroup.ideas',
+        url: '/ideas',
+        templateUrl: 'subgroup.ideas.html'
+    });
+
+    $stateProvider.state({
+        name: 'subgroup.activity',
+        url: '/activity',
+        templateUrl: 'subgroup.activity.html'
+    });
+
+    $stateProvider.state({
+        name: 'subgroup.members',
+        url: '/members',
+        templateUrl: 'subgroup.members.html',
+        controller: function($scope){
+            $scope.currentNavItem = 'members';
+        }
+    });
+
+    $stateProvider.state({
+        name: 'subgroup.workshops',
+        url: '/workshops',
+        templateUrl: 'subgroup.workshops.html',
+        controller: function($scope){
+            $scope.currentNavItem = 'workshops';
+        }
+    });
+
+    $stateProvider.state({
+        name: 'subgroup.settings',
+        abstract: true,
+        url: '/settings',
+        templateUrl: 'subgroup.settings.html',
+        controller: function($scope){
+            $scope.currentNavItem = 'general';
+        }
+    });
+
+    $stateProvider.state({
+        name: 'subgroup.settings.general',
+        url: '/general',
+        templateUrl: 'subgroup.settings.general.html',
+        controller: function($scope){
+            $scope.currentNavItem = 'general';
+        }
+    });
+
+    $stateProvider.state({
+        name: 'subgroup.addWorkshop',
+        url: '/addWorkshop',
+        templateUrl: 'subgroup.add-workshop.html'
+    });
+
+
+    /*=========== workshop states ===========*/
+
+    $stateProvider.state({
+        name: 'workshop',
+        abstract: true,
+        url: '/workshop/:idWorkshop',
+        templateUrl: 'workshop.html',
+        resolve: {
+        	redirectIfNotTutor: function($http, $stateParams, $state, $q, $timeout) {
+        		var deferred = $q.defer();
+        		$http.get(`${resourceUri}/auth/workshops/${$stateParams.idWorkshop}`)
+                    .then(function(response) {
+                        // if user is not tutor redirect to external page
+                        if (response.data.amITutor) {
+                            deferred.resolve();
+                        } else {
+                            $timeout(function () {
+                              $state.go("workshop-out", { idWorkshop: $stateParams.idWorkshop }, {});
+                            });
+                            deferred.reject();
+                        }
+                    });
+        		return deferred.promise;
+        	},
+        	workshop: function($http, $stateParams) {
+        		return $http.get(`${resourceUri}/auth/workshops/${$stateParams.idWorkshop}`)
+            		.then(function(response) {
+            			return response.data;
+            		});
+        	}
+        },
+        controller: function($scope, workshop) {
+            $scope.workshop = workshop;
+        }
+    });
+
+    $stateProvider.state({
+        name: 'workshop.general',
+        url: '/general',
+        templateUrl: 'workshop.general.html'
+    });
+
+    $stateProvider.state({
+        name: 'workshop.tutors',
+        url: '/tutors',
+        templateUrl: 'workshop.tutors.html',
+        controller: function($scope){
+            $scope.currentNavItem = 'general';
+        }
+    });
+
+    $stateProvider.state({
+        name: 'workshop.settings',
+        abstract: true,
+        url: '/settings',
+        templateUrl: 'workshop.settings.html',
+        controller: function($scope){
+            $scope.currentNavItem = 'general';
+        }
+    });
+
+    $stateProvider.state({
+        name: 'workshop.settings.general',
+        url: '/general',
+        templateUrl: 'workshop.settings.general.html',
+        controller: function($scope){
+            $scope.currentNavItem = 'general';
+        }
+    });
+
+});
+
+app.config(['cloudinaryProvider', function (cloudinaryProvider) {
+	cloudinaryProvider
+		.set("cloud_name", "dymje6shc")
+		.set("secure", true)
+		.set("upload_preset", "u6pnku96");
+}]);
+
+app.config(function($sceDelegateProvider) {
+	$sceDelegateProvider.resourceUrlWhitelist([
+	 // Allow same origin resource loads.
+     'self',
+     // Allow loading from our assets domain.  Notice the difference between * and **.
+     'http://res.cloudinary.com/**'
+   ]);
+ });
+
+
+
+
+
+
+app.controller('AppCtrl', ['$rootScope', '$http', '$state', '$location', '$window', '$scope', '$auth', 'authService',
+                function($rootScope, $http, $state, $location, $window, $scope, $auth, authService) {
+
+  $rootScope.isLoading = false;
+  $rootScope.user = {};
+
+//  $http.get(`${resourceUri}/hello`)
+//        .then(res => console.log(res));
+
+  authService.fetchAuthenticatedUser()
+      .then(user => {
+        console.log(user);
+
+        $rootScope.authenticated = true;
+
+        $rootScope.user = user;
+        $rootScope.user.hasAdminGeneralRole = user.authorities.find(x => x === 'ROLE_ADMIN_GENERAL') ? true : false;
+        $rootScope.user.hasAdminLabRole = user.authorities.find(x => x === 'ROLE_ADMIN_LAB') ? true : false;
+      });
+
+
+    //TODO: check logout() implementation
+    $scope.logout = function() {
+        $http.post('/login?logout', {})
+            .finally(function() {
+                $rootScope.authenticated = false;
+                $rootScope.user = {};
+                $window.location.href = '/';
+                console.log("Logout successful.");
+            });
+    }
+
+    // Toolbar search toggle
+    $scope.toggleSearch = function(element) {
+        $scope.showSearch = !$scope.showSearch;
+    };
+
+    // Sidenav toggle
+    $scope.toggleSidenav = function(menuId) {
+        $mdSidenav(menuId).toggle();
+    };
+
+}]);
+
+
+/*========== General controllers ==========*/
+
+// Controller in: dashboard.html
+app.controller('DashboardCtrl', function($rootScope, $scope, $http, authService) {
+
+	$rootScope.isLoading = true;
+	$scope.loading1 = true;
+
+	$scope.currentNavItem = 'groups';
+
+    authService.fetchAuthenticatedUser()
+        .then(user => {
+            //console.log(response.data);
+            $scope.fabber = user;
+        }).finally(function() {
+            // called no matter success or failure
+            $scope.loading1 = false;
+            $rootScope.isLoading = false;
+        });
+});
+
+// Controller in: dashboard.groups.html
+app.controller('DashboardGroupsCtrl', function($rootScope, $scope, $http, $mdDialog, authService) {
+
+	$scope.noGroups = false;
+	$scope.groups1 = [];
+	$scope.groups2 = [];
+	$scope.groups3 = [];
+
+	authService.fetchAuthenticatedUser()
+	    .then(user => $http.get(`${resourceUri}/auth/groups/find-all-mine/${user.email}`))
+	    .then(response => {
+	        if (response.data.length === 0) {
+                $scope.noGroups = true;
+            }
+            // for displaying data in 3 columns
+            for (i = 0; i < response.data.length; i++) {
+                if (i % 3 == 0) {
+                    $scope.groups1.push(response.data[i]);
+                } else if ((i + 2) % 3 == 0) {
+                    $scope.groups2.push(response.data[i]);
+                } else {
+                    $scope.groups3.push(response.data[i]);
+                }
+            }
+	    })
+	    .finally(function() {
+            // called no matter success or failure
+            $scope.loading = false;
+        });
+
+	// New group dialog
+	$scope.addGroup = function(ev) {
+	    $mdDialog.show({
+	      controller: AddGroupDialogController,
+	      templateUrl: 'add-group-dialog.tmpl.html',
+	      parent: angular.element(document.body),
+	      targetEvent: ev,
+	      clickOutsideToClose: true,
+	      fullscreen: true // Only for -xs, -sm breakpoints.
+	    })
+	    .then(function(answer) {
+	      // ok
+	    }, function() {
+	      // cancel
+	    });
+	};
+
+});
+
+// Controller in: dashboard.general-activity.html
+app.controller('DashboardGeneralActivityCtrl', function($rootScope, $scope, $http, moment) {
+
+	$http.get(`${resourceUri}/auth/activities/find-all-external`)
+		.then(response => {
+			$scope.activities = response.data;
+		}).finally(function() {
+
+		});
+
+});
+
+// Controller in: groups.html
+app.controller('GroupsCtrl', function($rootScope, $scope, $http, $state, $mdDialog, authService) {
+
+	$rootScope.isLoading = true;
+	$scope.loading1 = true;
+	$scope.groups = [];
+
+	$scope.getMatches = function(searchText) {
+	    return $http.get(`${resourceUri}/auth/groups/search/${searchText}`)
+                  .then(response => {
+                      // Map the response object to the data object.
+                      return response.data;
+                  });
+	};
+
+    authService.fetchAuthenticatedUser()
+        .then(user => $http.get(`${resourceUri}/auth/groups/${user.email}`))
+		.then(response => {
+			$scope.groups = response.data;
+		}).finally(function() {
+		    // called no matter success or failure
+		    $scope.loading1 = false;
+		    $rootScope.isLoading = false;
+		});
+
+	$scope.joinGroup = function(idGroup) {
+	    var user = authService.getAuthenticatedUser();
+		$http.post(`${resourceUri}/auth/groups/${idGroup}/join/${user.email}`)
+            .then(response => {
+                $state.go("group.general", { idGroup: idGroup }, {});
+            });
+	}
+
+	// New group dialog
+	$scope.addGroup = function(ev) {
+	    $mdDialog.show({
+	      controller: AddGroupDialogController,
+	      templateUrl: 'add-group-dialog.tmpl.html',
+	      parent: angular.element(document.body),
+	      targetEvent: ev,
+	      clickOutsideToClose: true,
+	      fullscreen: true // Only for -xs, -sm breakpoints.
+	    })
+	    .then(function(answer) {
+	      // ok
+	    }, function() {
+	      // cancel
+	    });
+	};
+
+});
+
+// Controller in: workshops.html
+app.controller('WorkshopsCtrl', function($rootScope, $scope, $http) {
+
+	$rootScope.isLoading = true;
+	$scope.loading1 = true;
+
+	$http.get(`${resourceUri}/auth/workshops/upcoming`)
+		.then(response => { $scope.workshops = response.data; })
+		.finally(function() {
+		    // called no matter success or failure
+		    $scope.loading1 = false;
+		    $rootScope.isLoading = $scope.loading1;
+		});
+
+});
+
+// Controller in: group-out.html
+app.controller('GroupOutCtrl', function($rootScope, $scope, $http, $state, $stateParams, authService) {
+
+	$rootScope.isLoading = true;
+	var user = authService.getAuthenticatedUser();
+
+	// Injects the group object in the parent scope
+	$http.get(`${resourceUri}/auth/groups/${$stateParams.idGroup}/${user.email}`)
+		.then(function(response) {
+			$scope.group = response.data;
+		}).finally(function() {
+		    // called no matter success or failure
+			$rootScope.isLoading = false;
+		});
+
+	$scope.joinGroup = function(idGroup) {
+		$http.post(`${resourceUri}/auth/groups/${idGroup}/join`)
+			.then(function(response) {
+				$state.go("group.general", { idGroup: idGroup }, {});
+			});
+	}
+
+});
+
+// Controller in: subgroup-out.html
+app.controller('SubgroupOutCtrl', function($rootScope, $scope, $http, $state, $stateParams, authService) {
+
+	$rootScope.isLoading = true;
+
+	// Injects the subgroup object in the parent scope
+	authService.fetchAuthenticatedUser()
+	    .then(user => $http.get(`${resourceUri}/auth/subgroups/${$stateParams.idSubgroup}/${user.email}`))
+		.then(response => {
+			$scope.subgroup = response.data;
+			$scope.subgroup.description = decodeURIComponent($scope.subgroup.description);
+		}).finally(function() {
+		    // called no matter success or failure
+			$rootScope.isLoading = false;
+		});
+
+	$scope.joinSubgroup = function(idSubGroup) {
+	    var user = authService.getAuthenticatedUser();
+		$http.post(`${resourceUri}/auth/subgroups/${idSubGroup}/join/${user.email}`)
+			.then(response => {
+				$state.go("subgroup.general", { idSubgroup: idSubGroup }, {});
+			});
+	}
+
+});
+
+// Controller in: workshop-out.html
+app.controller('WorkshopOutCtrl', function($scope, $http, $stateParams, authService) {
+
+    authService.fetchAuthenticatedUser()
+        .then(user => $http.get(`${resourceUri}/auth/workshops/${$stateParams.idWorkshop}/${user.email}`))
+        .then(response => {
+            $scope.workshop = response.data;
+            $scope.workshop.description = decodeURIComponent($scope.workshop.description);
+        })
+        .finally(function() {
+            // called no matter success or failure
+        });
+
+});
+
+
+/*========== Settings controllers ==========*/
+
+// Controller in: settings.profile.html
+app.controller('SettingsProfileCtrl', function($rootScope, $scope, $http, $stateParams, $state, $mdToast, authService) {
+	var self = this;
+
+	$scope.newLab = false;
+
+	authService.fetchAuthenticatedUser()
+	    .then(user => $http.get(`${resourceUri}/auth/fabbers/me/profile/${user.email}`))
+	    .then(response => {
+	        $scope.fabber = response.data;
+	    })
+	    .finally(function() {
+            // called no matter success or failure
+        });
+
+	// autocomplete for labs
+	$scope.getMatches = function(searchText) {
+	    return $http.get(`${resourceUri}/auth/labs/search/${searchText}`)
+                  .then(response => {
+                      // Map the response object to the data object.
+                      return response.data;
+                  });
+	};
+
+	$scope.submit = function() {
+		var user = authService.getAuthenticatedUser();
+		// submit data
+		$http.put(`${resourceUri}/auth/fabbers/me/update/${user.email}`, {
+		    name: $scope.fabber.name,
+			firstName: $scope.fabber.firstName,
+			lastName: $scope.fabber.lastName,
+			isFabAcademyGrad: $scope.fabber.isFabAcademyGrad,
+			fabAcademyGradYear: $scope.fabber.isFabAcademyGrad ? $scope.fabber.fabAcademyGradYear : null,
+			city: $scope.fabber.city,
+			country: $scope.fabber.country,
+			mainQuote: $scope.fabber.mainQuote,
+			weekGoal: $scope.fabber.weekGoal,
+			labId: $scope.newLab ? self.selectedLab.idLab : $scope.fabber.labId
+		})
+		.then(response => {
+			console.log("saved!");
+			$mdToast.show(
+		      $mdToast.simple()
+		        .textContent('Info updated!')
+		        .position("bottom right")
+		        .hideDelay(1500)
+			);
+			// reload current state
+			$state.go($state.current, {}, {reload: true});
+		},
+		function errorCallback(response) {
+			$mdToast.show(
+		      $mdToast.simple()
+		        .textContent('Something went wrong :(')
+		        .position("bottom right")
+		        .hideDelay(1500)
+			);
+		});
+	};
+
+	$scope.updateLabs = function() {
+		$rootScope.isLoading = true;
+
+		$http.get('https://api.fablabs.io/v0/labs.json')
+		.then(response => {
+			// submit data
+			$http.post(`${resourceUri}/auth/labs/update-all`, {
+				labs: response.data.labs
+			}).then(function successCallback(response) {
+				console.log("labs updated!");
+				$rootScope.isLoading = false;
+
+				$mdToast.show(
+			      $mdToast.simple()
+			        .textContent('Labs info updated!')
+			        .position("bottom right")
+			        .hideDelay(1500)
+				);
+				// reload current state
+				$state.go($state.current, {}, {reload: true});
+			}, function errorCallback(response) {
+				$rootScope.isLoading = false;
+
+				$mdToast.show(
+			      $mdToast.simple()
+			        .textContent("Couldn't update labs info :(")
+			        .position("bottom right")
+			        .hideDelay(1500)
+				);
+			});
+		}).finally(function() {
+		    // called no matter success or failure
+		});
+	};
+
+});
+
+// Controller in: settings.password.html
+app.controller('SettingsPasswordCtrl', function($scope, $http, $stateParams, $state, $mdToast) {
+
+	$scope.submit = function() {
+		// submit data
+		$http.post(`${resourceUri}/auth/fabbers/me/update-password`, {
+			password: $scope.password,
+			newPassword: $scope.newPassword,
+			passwordConfirmation: $scope.passwordConfirmation
+		})
+		.then(function successCallback(response) {
+			console.log("saved!");
+			$mdToast.show(
+		      $mdToast.simple()
+		        .textContent('Password updated!')
+		        .position("bottom right")
+		        .hideDelay(1500)
+			);
+			// reload current state
+			$state.go($state.current, {}, {reload: true});
+		},
+		function errorCallback(response) {
+			$mdToast.show(
+		      $mdToast.simple()
+		        .textContent("Couldn't update your password :(")
+		        .position("bottom right")
+		        .hideDelay(1500)
+			);
+		});
+	};
+
+});
+
+/*========== Fabber controllers ==========*/
+
+// Controller in: fabber.html
+app.controller('FabberCtrl', function($scope, $http, $stateParams) {
+
+	// Injects the fabber object in the parent scope
+	$http.get(`${resourceUri}/auth/fabbers/${$stateParams.idFabber}`)
+		.then(function(response) {
+			$scope.fabberLocal = response.data;
+		}).finally(function() {
+		    // called no matter success or failure
+		});
+
+});
+
+// Controller in: fabber.groups.html
+app.controller('FabberGroupsCtrl', function($scope, $http, $stateParams, $state) {
+
+	$scope.groups1 = [];
+	$scope.groups2 = [];
+	$scope.groups3 = [];
+
+	$http.get(`${resourceUri}/auth/groups/find-all-fabber/$stateParams.idFabber`)
+		.then(function(response) {
+			if (response.data.length === 0) {
+				$scope.noGroups = true;
+			}
+			// for displaying data in 3 columns
+			for (i = 0; i < response.data.length; i++) {
+				if (i % 3 == 0) {
+					$scope.groups1.push(response.data[i]);
+				} else if ((i + 2) % 3 == 0) {
+					$scope.groups2.push(response.data[i]);
+				} else {
+					$scope.groups3.push(response.data[i]);
+				}
+			}
+		}).finally(function() {
+		    // called no matter success or failure
+		    $scope.loading = false;
+		});
+
+	// New group dialog
+	$scope.addGroup = function(ev) {
+	    $mdDialog.show({
+	      controller: AddGroupDialogController,
+	      templateUrl: 'add-group-dialog.tmpl.html',
+	      parent: angular.element(document.body),
+	      targetEvent: ev,
+	      clickOutsideToClose: true,
+	      fullscreen: true // Only for -xs, -sm breakpoints.
+	    })
+	    .then(function(answer) {
+	      // ok
+	    }, function() {
+	      // cancel
+	    });
+	};
+
+});
+
+// Controller in: fabber.activity.html
+app.controller('FabberActivityCtrl', function($scope, $http, $stateParams, $state) {
+
+});
+
+
+//========== Group controllers ==========
+
+// Controller in: group.html
+app.controller('GroupCtrl', function($scope, $http, $stateParams) {
+
+});
+
+// Controller in: group.general.html
+app.controller('GroupGeneralCtrl', function($scope, $http, $stateParams, $mdDialog) {
+
+	// New subgroup dialog
+	$scope.addSubgroup = function(ev) {
+	    $mdDialog.show({
+	      controller: AddSubgroupDialogController,
+	      templateUrl: 'add-subgroup-dialog.tmpl.html',
+	      parent: angular.element(document.body),
+	      targetEvent: ev,
+	      clickOutsideToClose: true,
+	      fullscreen: true // Only for -xs, -sm breakpoints.
+	    })
+	    .then(function(answer) {
+	      // ok
+	    }, function() {
+	      // cancel
+	    });
+	};
+
+});
+
+// Controller in: group.activity.html
+app.controller('GroupActivityCtrl', function($scope, $http, moment) {
+
+	$http.get(`${resourceUri}/auth/activities/group/${$scope.group.idGroup}`)
+		.then(response => {
+			$scope.activities = response.data;
+		}).finally(function() {
+
+		});
+
+});
+
+// Controller in: group.members.html
+app.controller('GroupMembersCtrl', function($scope, $http, $state, $mdDialog, $mdToast, moment, authService) {
+
+	// Invite member dialog
+	$scope.addMember = function(ev) {
+	    $mdDialog.show({
+	      locals: { group: $scope.group }, // passing data to dialog
+	      controller: AddGroupMemberDialogController,
+	      templateUrl: 'add-group-member-dialog.tmpl.html',
+	      parent: angular.element(document.body),
+	      targetEvent: ev,
+	      clickOutsideToClose: true,
+	      fullscreen: true // Only for -xs, -sm breakpoints.
+	    })
+	    .then(function(answer) {
+	    	if (answer === 'ok') {
+	    		// reload current state
+	    		$state.go($state.current, {}, { reload: true });
+	    	}
+	    }, function() {
+	      // cancel
+	    });
+	};
+
+	$scope.leave = function(ev) {
+		var confirm = $mdDialog.confirm()
+        // .title('Are you sure you want to leave this group?')
+        .textContent($scope.group.members.length > 1 ?
+                        'Are you sure you want to leave this group?' :
+                        'You are the last member. If you leave, the group will disappear.')
+        .ariaLabel('Confirmation')
+        .targetEvent(ev)
+        .ok('Leave')
+        .cancel('Cancel');
+
+		$mdDialog.show(confirm)
+            .then(function() {
+                var user = authService.getAuthenticatedUser();
+                // submit data
+                $http.post(`${resourceUri}/auth/groups/${$scope.group.idGroup}/leave/${user.email}`, {
+                }).then(function successCallback(response) {
+                    // redirect
+                    $state.go("groups", {}, {reload: true});
+                }, function errorCallback(response) {
+                    $mdToast.show(
+                      $mdToast.simple()
+                        .textContent("Something went wrong :(")
+                        .position("bottom right")
+                        .hideDelay(1500)
+                    );
+                });
+            }, function() {
+              // canceled
+            });
+	};
+
+	$scope.nameCoordinator = function(item) {
+	    var user = authService.getAuthenticatedUser();
+		// submit data
+		$http.post(`${resourceUri}/auth/groups/${$scope.group.idGroup}/name-coordinator/${user.email}`, JSON.stringify(item))
+		.then(function successCallback(response) {
+			// redirect
+			$state.go($state.current, {}, { reload: true });
+		}, function errorCallback(response) {
+			$mdToast.show(
+		      $mdToast.simple()
+		        .textContent("Something went wrong :(")
+		        .position("bottom right")
+		        .hideDelay(1500)
+			);
+		});
+	};
+
+	$scope.removeMember = function(ev, item) {
+		var confirm = $mdDialog.confirm()
+            // .title('Are you sure you want to leave this group?')
+            .textContent('Are you sure you want to remove this member?')
+            .ariaLabel('Confirmation')
+            .targetEvent(ev)
+            .ok('Remove')
+            .cancel('Cancel');
+
+		$mdDialog.show(confirm)
+            .then(function() {
+                var user = authService.getAuthenticatedUser();
+                // submit data
+                $http.delete(`${resourceUri}/auth/groups/${$scope.group.idGroup}/members/${item.idGroupMember}/${user.email}`)
+                .then(function successCallback(response) {
+                    // redirect
+                    $state.go($state.current, {}, { reload: true });
+                }, function errorCallback(response) {
+                    $mdToast.show(
+                      $mdToast.simple()
+                        .textContent("Something went wrong :(")
+                        .position("bottom right")
+                        .hideDelay(1500)
+                    );
+                });
+            }, function() {
+              // canceled
+            });
+	};
+
+});
+
+// Controller in: group.subgroups.html
+app.controller('GroupSubgroupsCtrl', function($scope, $http, $state, $mdDialog, $mdToast) {
+
+	// New subgroup dialog
+	$scope.addSubgroup = function(ev) {
+	    $mdDialog.show({
+	      controller: AddSubgroupDialogController,
+	      templateUrl: 'add-subgroup-dialog.tmpl.html',
+	      parent: angular.element(document.body),
+	      targetEvent: ev,
+	      clickOutsideToClose: true,
+	      fullscreen: true // Only for -xs, -sm breakpoints.
+	    })
+	    .then(function(answer) {
+	      // ok
+	    }, function() {
+	      // cancel
+	    });
+	};
+
+	$scope.removeSubgroup = function(ev, item) {
+		var confirm = $mdDialog.confirm()
+            // .title('Are you sure you want to leave this group?')
+            .textContent('Are you sure you want to remove this subgroup?')
+            .ariaLabel('Confirmation')
+            .targetEvent(ev)
+            .ok('Remove')
+            .cancel('Cancel');
+
+		$mdDialog.show(confirm)
+            .then(function() {
+                var user = authService.getAuthenticatedUser();
+                // submit data
+                $http.delete(`${resourceUri}/auth/subgroups/${item.idSubGroup}/${user.email}`, {})
+                    .then(function successCallback(response) {
+                        // redirect
+                        $state.go($state.current, {}, { reload: true });
+                    }, function errorCallback(response) {
+                        $mdToast.show(
+                          $mdToast.simple()
+                            .textContent("Something went wrong :(")
+                            .position("bottom right")
+                            .hideDelay(1500)
+                        );
+                    });
+            }, function() {
+              // canceled
+            });
+	};
+
+});
+
+// Controller in: group.settings.general.html
+app.controller('GroupSettingsGeneralCtrl', function($rootScope, $scope, $http, $state, $mdToast, $mdDialog, Upload, cloudinary) {
+	$scope._group = {};
+	$scope._group.name = $scope.group.name;
+	$scope._group.description = decodeURIComponent($scope.group.description);
+	$scope._group.reunionDay = $scope.group.reunionDay;
+	if ($scope.group.reunionTime) {
+		$scope._group.reunionTimeHour = $scope.group.reunionTime.length == 7 ? parseInt($scope.group.reunionTime.substring(0, 1)) :  parseInt($scope.group.reunionTime.substring(0,2));
+		$scope._group.reunionTimeMinutes = $scope.group.reunionTime.length == 7 ? parseInt($scope.group.reunionTime.substring(2, 4)) :  parseInt($scope.group.reunionTime.substring(3,5));
+		$scope._group.reunionTimeMeridian = $scope.group.reunionTime.length == 7 ? $scope.group.reunionTime.substring(5, 7) :  $scope.group.reunionTime.substring(6,8);
+	} else {
+		$scope._group.reunionTimeHour = null;
+		$scope._group.reunionTimeMinutes = null;
+		$scope._group.reunionTimeMeridian = null;
+	}
+	$scope._group.mainUrl = $scope.group.mainUrl;
+	$scope._group.secondaryUrl = $scope.group.secondaryUrl;
+	$scope._group.photoUrl = $scope.group.photoUrl;
+
+	$scope.submit = function() {
+		console.log($scope._group);
+
+		// avoids error when minutes are 0
+		var parsedMinutes = $scope._group.reunionTimeMinutes === 0 ? $scope._group.reunionTimeMinutes + '0' : $scope._group.reunionTimeMinutes;
+
+		// submit data
+		$http.put(`${resourceUri}/auth/groups/${$scope.group.idGroup}` , {
+			name: $scope._group.name,
+			description: encodeURIComponent($scope._group.description),
+			reunionDay: $scope._group.reunionDay,
+			reunionTime: $scope._group.reunionTimeHour != null && $scope._group.reunionTimeMinutes != null && $scope._group.reunionTimeMeridian != null ? $scope._group.reunionTimeHour + ":" + parsedMinutes + " " + $scope._group.reunionTimeMeridian : null,
+			mainUrl: $scope._group.mainUrl,
+			secondaryUrl: $scope._group.secondaryUrl,
+			photoUrl: $scope._group.photoUrl
+		}).then(function successCallback(response) {
+			console.log("saved!");
+			$mdToast.show(
+		      $mdToast.simple()
+		        .textContent('Group updated!')
+		        .position("bottom right")
+		        .hideDelay(1500)
+			);
+
+			$state.go("group.general", { idGroup: $scope.group.idGroup }, { reload: true });
+		}, function errorCallback(response) {
+			$mdToast.show(
+		      $mdToast.simple()
+		        .textContent('Something went wrong :(')
+		        .position("bottom right")
+		        .hideDelay(1500)
+			);
+		});
+	};
+
+	$scope.delete = function(ev) {
+		var confirm = $mdDialog.confirm()
+	        .title('Are you sure you want to delete this group?')
+	        .textContent('All of the data including subgroups, workshops and members associated with this instance will be permanently lost.')
+	        .ariaLabel('Confirmation')
+	        .targetEvent(ev)
+	        .ok('Delete')
+	        .cancel('Cancel');
+
+		$mdDialog.show(confirm)
+            .then(function() {
+                $http.delete(`${resourceUri}/auth/groups/${$scope.group.idGroup}`)
+                    .then(function successCallback(response) {
+                        console.log("deleted!");
+                        $mdToast.show(
+                          $mdToast.simple()
+                            .textContent('Group deleted!')
+                            .position("bottom right")
+                            .hideDelay(1500)
+                        );
+                        $state.go("groups", {}, {});
+                    }, function errorCallback(response) {
+                        $mdToast.show(
+                              $mdToast.simple()
+                                .textContent('Something went wrong :(')
+                                .position("bottom right")
+                                .hideDelay(1500)
+                            );
+                    });
+            }, function() {
+
+            });
+	};
+
+	$scope.uploadNewPicture = function(file) {
+		$rootScope.isLoading = true;
+
+		Upload.upload({
+            url: "https://api.cloudinary.com/v1_1/" + cloudinary.config().cloud_name + "/upload",
+            data: {
+            	upload_preset: cloudinary.config().upload_preset,
+            	file: file
+            }
+        }).then(function(response) {
+            //console.log('Success ' + response.config.data.file.name + ' uploaded. Response: ' + response.data);
+            //console.log(response.data);
+            $scope.group.photoUrl = response.data.public_id + '.png';
+
+            // update group
+    		$http.put(`${resourceUri}/auth/groups/${$scope.group.idGroup}/update-avatar`, {
+    			photoUrl: $scope.group.photoUrl
+    		}).then(function successCallback(response) {
+    			console.log("URL set in model!");
+
+    			$rootScope.isLoading = false;
+
+    			$mdToast.show(
+    		      $mdToast.simple()
+    		        .textContent('Avatar updated!')
+    		        .position("bottom right")
+    		        .hideDelay(1500)
+    			);
+
+    			// reload current state
+    			$state.go($state.current, {}, {reload: true});
+    		}, function errorCallback(response) {
+    			$rootScope.isLoading = false;
+
+    			$mdToast.show(
+    		      $mdToast.simple()
+    		        .textContent('Something went wrong :(')
+    		        .position("bottom right")
+    		        .hideDelay(1500)
+    			);
+    		});
+
+        }, function(response) {
+            console.log('Error status: ' + response.status);
+            console.log(response);
+
+            $rootScope.isLoading = false;
+
+            $mdToast.show(
+  		      $mdToast.simple()
+  		        .textContent('Something went wrong :(')
+  		        .position("bottom right")
+  		        .hideDelay(1500)
+  			);
+        }, function(evt) {
+            var progressPercentage = parseInt(100.0 * evt.loaded / evt.total);
+            console.log('progress: ' + progressPercentage + '%');
+        });
+
+	};
+
+});
+
+
+//========== Subgroup controllers ==========
+
+// Controller in: subgroup.html
+app.controller('SubgroupCtrl', function($scope, $http, $stateParams, $state) {
+
+});
+
+// Controller in: subgroup.general.html
+app.controller('SubgroupGeneralCtrl', function($scope, $http, $stateParams) {
+
+});
+
+// Controller in: subgroup.activity.html
+app.controller('SubgroupActivityCtrl', function($scope, $http, moment) {
+
+	$http.get(`${resourceUri}/auth/activities/subgroup/${$scope.subgroup.idSubGroup}`)
+		.then(function(response) {
+			$scope.activities = response.data;
+		}).finally(function() {
+
+		});
+
+});
+
+//Controller in: subgroup.members.html
+app.controller('SubgroupMembersCtrl', function($scope, $http, $state, $mdDialog, $mdToast, moment, authService) {
+
+	$scope.leave = function(ev) {
+		var confirm = $mdDialog.confirm()
+            // .title('Are you sure you want to leave this group?')
+            .textContent($scope.subgroup.members.length > 1 ?
+                        'Are you sure you want to leave this subgroup?' :
+                        'You are the last member. If you leave, the subgroup will disappear.')
+            .ariaLabel('Confirmation')
+            .targetEvent(ev)
+            .ok('Leave')
+            .cancel('Cancel');
+
+		$mdDialog.show(confirm)
+            .then(function() {
+                var user = authService.getAuthenticatedUser();
+                // submit data
+                $http.post(`${resourceUri}/auth/subgroups/${$scope.subgroup.idSubGroup}/leave/${user.email}`, {})
+                    .then(function successCallback(response) {
+                        // redirect
+                        $state.go("group.general", { idGroup: $scope.subgroup.groupId }, { reload: true });
+                    }, function errorCallback(response) {
+                        $mdToast.show(
+                          $mdToast.simple()
+                            .textContent("Something went wrong :(")
+                            .position("bottom right")
+                            .hideDelay(1500)
+                        );
+                    });
+            }, function() {
+              // canceled
+            });
+	};
+
+	$scope.nameCoordinator = function(item) {
+	    var user = authService.getAuthenticatedUser();
+		// submit data
+		$http.post(`${resourceUri}/auth/subgroups/${$scope.subgroup.idSubGroup}/name-coordinator/${user.email}`, JSON.stringify(item))
+            .then(function successCallback(response) {
+                // redirect
+                $state.go($state.current, {}, { reload: true });
+            }, function errorCallback(response) {
+                $mdToast.show(
+                  $mdToast.simple()
+                    .textContent("Something went wrong :(")
+                    .position("bottom right")
+                    .hideDelay(1500)
+                );
+            });
+	};
+
+	$scope.removeMember = function(ev, item) {
+		var confirm = $mdDialog.confirm()
+            // .title('Are you sure you want to leave this group?')
+            .textContent('Are you sure you want to remove this member?')
+            .ariaLabel('Confirmation')
+            .targetEvent(ev)
+            .ok('Remove')
+            .cancel('Cancel');
+
+		$mdDialog.show(confirm)
+            .then(function() {
+                var user = authService.getAuthenticatedUser();
+                // submit data
+                $http.post(`${resourceUri}/auth/subgroups/${$scope.subgroup.idSubGroup}/delete-member/${user.email}`, JSON.stringify(item))
+                    .then(function successCallback(response) {
+                        // redirect
+                        $state.go($state.current, {}, { reload: true });
+                    }, function errorCallback(response) {
+                        $mdToast.show(
+                          $mdToast.simple()
+                            .textContent("Something went wrong :(")
+                            .position("bottom right")
+                            .hideDelay(1500)
+                        );
+                    });
+            }, function() {
+              // canceled
+            });
+	};
+
+});
+
+// Controller in: subgroup.workshops.html
+app.controller('SubgroupWorkshopsCtrl', function($scope, $http, $state, $mdDialog, $mdToast) {
+
+	// New subgroup dialog
+	$scope.addSubgroup = function(ev) {
+	    $mdDialog.show({
+	      controller: AddSubgroupDialogController,
+	      templateUrl: 'add-subgroup-dialog.tmpl.html',
+	      parent: angular.element(document.body),
+	      targetEvent: ev,
+	      clickOutsideToClose: true,
+	      fullscreen: true // Only for -xs, -sm breakpoints.
+	    })
+	    .then(function(answer) {
+	      // ok
+	    }, function() {
+	      // cancel
+	    });
+	};
+
+	$scope.removeWorkshop = function(ev, item) {
+		var confirm = $mdDialog.confirm()
+            // .title('Are you sure you want to leave this group?')
+            .textContent('Are you sure you want to remove this workshop?')
+            .ariaLabel('Confirmation')
+            .targetEvent(ev)
+            .ok('Remove')
+            .cancel('Cancel');
+
+		$mdDialog.show(confirm)
+            .then(function() {
+                // submit data
+                $http.delete(`${resourceUri}/auth/workshops/${item.idWorkshop}`, {})
+                .then(function successCallback(response) {
+                    // redirect
+                    $state.go($state.current, {}, { reload: true });
+                }, function errorCallback(response) {
+                    $mdToast.show(
+                      $mdToast.simple()
+                        .textContent("Something went wrong :(")
+                        .position("bottom right")
+                        .hideDelay(1500)
+                    );
+                });
+            }, function() {
+              // canceled
+            });
+	};
+
+});
+
+
+// Controller in: subgroup.settings.general.html
+app.controller('SubgroupSettingsGeneralCtrl', function($scope, $http, $state, $mdToast, $mdDialog) {
+
+	$scope._subgroup = {};
+	$scope._subgroup.name = $scope.subgroup.name;
+	$scope._subgroup.description = decodeURIComponent($scope.subgroup.description);
+	$scope._subgroup.reunionDay = $scope.subgroup.reunionDay;
+	if ($scope.subgroup.reunionTime) {
+		$scope._subgroup.reunionTimeHour = $scope.subgroup.reunionTime.length == 7 ? parseInt($scope.subgroup.reunionTime.substring(0, 1)) :  parseInt($scope.subgroup.reunionTime.substring(0,2));
+		$scope._subgroup.reunionTimeMinutes = $scope.subgroup.reunionTime.length == 7 ? parseInt($scope.subgroup.reunionTime.substring(2, 4)) :  parseInt($scope.subgroup.reunionTime.substring(3,5));
+		$scope._subgroup.reunionTimeMeridian = $scope.subgroup.reunionTime.length == 7 ? $scope.subgroup.reunionTime.substring(5, 7) :  $scope.subgroup.reunionTime.substring(6,8);
+	} else {
+		$scope._subgroup.reunionTimeHour = null;
+		$scope._subgroup.reunionTimeMinutes = null;
+		$scope._subgroup.reunionTimeMeridian = null;
+	}
+	$scope._subgroup.mainUrl = $scope.subgroup.mainUrl;
+	$scope._subgroup.secondaryUrl = $scope.subgroup.secondaryUrl;
+	$scope._subgroup.photoUrl = $scope.subgroup.photoUrl;
+
+	$scope.submit = function() {
+		console.log($scope._subgroup);
+
+		// avoids error when minutes are 0
+		var parsedMinutes = $scope._subgroup.reunionTimeMinutes === 0 ? $scope._subgroup.reunionTimeMinutes + '0' : $scope._subgroup.reunionTimeMinutes;
+		console.log(parsedMinutes);
+
+		// submit data
+		$http.put(`${resourceUri}/auth/subgroups/${$scope.subgroup.idSubGroup}`, {
+                name: $scope._subgroup.name,
+                description: encodeURIComponent($scope._subgroup.description),
+                reunionDay: $scope._subgroup.reunionDay,
+                reunionTime: $scope._subgroup.reunionTimeHour != null && $scope._subgroup.reunionTimeMinutes != null && $scope._subgroup.reunionTimeMeridian != null ? $scope._subgroup.reunionTimeHour + ":" + parsedMinutes + " " + $scope._subgroup.reunionTimeMeridian : null,
+                mainUrl: $scope._subgroup.mainUrl,
+                secondaryUrl: $scope._subgroup.secondaryUrl,
+                photoUrl: $scope._subgroup.photoUrl
+            })
+            .then(function successCallback(response) {
+                console.log("saved!");
+                $mdToast.show(
+                  $mdToast.simple()
+                    .textContent('Subgroup updated!')
+                    .position("bottom right")
+                    .hideDelay(1500)
+                );
+
+                $state.go("subgroup.general", { idSubGroup: $scope.subgroup.idSubGroup }, { reload: true });
+            },
+            function errorCallback(response) {
+                $mdToast.show(
+                  $mdToast.simple()
+                    .textContent('Something went wrong :(')
+                    .position("bottom right")
+                    .hideDelay(1500)
+                );
+            });
+	};
+
+	$scope.delete = function(ev) {
+		var confirm = $mdDialog.confirm()
+	        .title('Are you sure you want to delete this subgroup?')
+	        .textContent('All of the data and workshops associated with this instance will be permanently lost.')
+	        .ariaLabel('Confirmation')
+	        .targetEvent(ev)
+	        .ok('Delete')
+	        .cancel('Cancel');
+
+		$mdDialog.show(confirm)
+            .then(function() {
+                var user = authService.getAuthenticatedUser();
+                $http.delete(`${resourceUri}/auth/subgroups/${$scope.subgroup.idSubGroup}/${user.email}`)
+                    .then(function successCallback(response) {
+                        console.log("deleted!");
+                        $mdToast.show(
+                          $mdToast.simple()
+                            .textContent('Subgroup deleted!')
+                            .position("bottom right")
+                            .hideDelay(1500)
+                        );
+                        $state.go("group.general", { idGroup: $scope.subgroup.groupId }, {});
+                    }, function errorCallback(response) {
+                        $mdToast.show(
+                          $mdToast.simple()
+                            .textContent('Something went wrong :(')
+                            .position("bottom right")
+                            .hideDelay(1500)
+                        );
+                    });
+            }, function() {
+              // canceled
+            });
+	};
+
+});
+
+// Controller in: subgroup.add-workshop.html
+app.controller('SubgroupAddWorkshopCtrl', function($scope, $http, $stateParams, $state, $window, $mdToast) {
+	var self = this;
+
+	$scope.address = {
+	    name: '',
+	    place: '',
+	    components: {
+	      placeId: '',
+	      streetNumber: '',
+	      street: '',
+	      city: '',
+	      state: '',
+	      countryCode: '',
+	      country: '',
+	      postCode: '',
+	      district: '',
+	      location: {
+	        lat: '',
+	        long: ''
+	      }
+	    }
+	};
+
+	// initialize checkbox attributes
+	$scope._workshop = {};
+	$scope._workshop.isPaid = false;
+	// restrict min-date for date pickers
+	$scope.today = new Date();
+
+	$scope.getAppMatches = function(searchText) {
+	    return $http
+	      .get(`${resourceUri}/auth/locations/search/${searchText}`)
+	      .then(function(response) {
+	    	  // Map the response object to the data object.
+	    	  return response.data;
+	      });
+	};
+
+	$scope.submit = function() {
+		console.log($scope._workshop);
+
+		// submit data
+		$http.post(`${resourceUri}/auth/workshops/${user.email}`, {
+			name: $scope._workshop.name,
+			description: encodeURIComponent($scope._workshop.description),
+			startDate: $scope._workshop.startDate.getDate() + "-" + ($scope._workshop.startDate.getMonth() + 1) + "-" + $scope._workshop.startDate.getFullYear(),
+			startTime: $scope._workshop.startTimeHours + ":" + $scope._workshop.startTimeMinutes + " " + $scope._workshop.startTimeMeridian,  // time format for api
+			endDate: $scope._workshop.endDate.getDate() + "-" + ($scope._workshop.endDate.getMonth() + 1) + "-" + $scope._workshop.endDate.getFullYear(),
+			endTime: $scope._workshop.endTimeHours + ":" + $scope._workshop.endTimeMinutes + " " + $scope._workshop.endTimeMeridian,
+			isPaid: $scope._workshop.isPaid,
+			price: $scope._workshop.isPaid ? $scope._workshop.price : null,
+			currency: $scope._workshop.isPaid ? $scope._workshop.currency : null,
+			facebookUrl: $scope._workshop.facebookUrl,
+			ticketsUrl: $scope._workshop.ticketsUrl,
+			// dependencies
+			subGroupId: $stateParams.idSubgroup, // parent
+			locationId: !$scope._workshop.isNewLocation ? self.selectedLocation.idLocation : null,
+			locationAddress: $scope._workshop.isNewLocation ? $scope.address.components.street + " " + $scope.address.components.streetNumber : null,
+			locationCity: $scope._workshop.isNewLocation ? $scope.address.components.city : null,
+			locationCountry: $scope._workshop.isNewLocation ? $scope.address.components.country : null,
+			locationLatitude: $scope._workshop.isNewLocation ? $scope.address.components.location.lat : null,
+			locationLongitude: $scope._workshop.isNewLocation ? $scope.address.components.location.long : null
+		})
+		.then(function successCallback(response) {
+			console.log("saved!");
+			$mdToast.show(
+		      $mdToast.simple()
+		        .textContent('Workshop added!')
+		        .position("bottom right")
+		        .hideDelay(1500)
+			);
+
+			$state.go("workshop.general", { idWorkshop: response.data.idWorkshop }, {});
+		},
+		function errorCallback(response) {
+			$mdToast.show(
+		      $mdToast.simple()
+		        .textContent('Something went wrong :(')
+		        .position("bottom right")
+		        .hideDelay(1500)
+			);
+		});
+	  };
+
+	  $scope.goBack = function() {
+		  $window.history.back();
+	  };
+
+});
+
+
+
+/*========== Workshop controllers ==========*/
+
+
+// Controller in: workshop.html
+app.controller('WorkshopCtrl', function($scope, $http, $stateParams, $state) {
+
+});
+
+// Controller in: workshop.general.html
+app.controller('WorkshopGeneralCtrl', function($scope, $http, $stateParams) {
+
+});
+
+// Controller in: workshop.management.general.html
+app.controller('WorkshopManagementGeneralCtrl', function($scope, $http, $stateParams, $state, $mdDialog, $mdToast) {
+	var self = this;
+	$scope.address = {
+	    name: '',
+	    place: '',
+	    components: {
+	      placeId: '',
+	      streetNumber: '',
+	      street: '',
+	      city: '',
+	      state: '',
+	      countryCode: '',
+	      country: '',
+	      postCode: '',
+	      district: '',
+	      location: {
+	        lat: '',
+	        long: ''
+	      }
+	    }
+	};
+
+	// restrict min-date for date pickers
+	$scope.today = new Date();
+
+	$scope._workshop = {};
+	$scope._workshop.name = $scope.workshop.name;
+	$scope._workshop.description = decodeURIComponent($scope.workshop.description);
+	$scope._workshop.startDate = new Date(parseInt($scope.workshop.startDate.substring(6, 10)), parseInt($scope.workshop.startDate.substring(3, 5)) - 1, parseInt($scope.workshop.startDate.substring(0, 2)));
+	$scope._workshop.startTimeHours = $scope.workshop.startTime.length == 7 ? parseInt($scope.workshop.startTime.substring(0, 1)) : parseInt($scope.workshop.startTime.substring(0,2));
+	$scope._workshop.startTimeMinutes = $scope.workshop.startTime.length == 7 ? parseInt($scope.workshop.startTime.substring(2, 4)) : parseInt($scope.workshop.startTime.substring(3,5));
+	$scope._workshop.startTimeMeridian = $scope.workshop.startTime.length == 7 ? $scope.workshop.startTime.substring(5, 7) : $scope.workshop.startTime.substring(6,8);
+	$scope._workshop.endDate = new Date(parseInt($scope.workshop.endDate.substring(6, 10)), parseInt($scope.workshop.endDate.substring(3, 5)) - 1, parseInt($scope.workshop.endDate.substring(0, 2)));
+	$scope._workshop.endTimeHours = $scope.workshop.endTime.length == 7 ? parseInt($scope.workshop.endTime.substring(0, 1)) : parseInt($scope.workshop.endTime.substring(0,2));
+	$scope._workshop.endTimeMinutes = $scope.workshop.endTime.length == 7 ? parseInt($scope.workshop.endTime.substring(2, 4)) : parseInt($scope.workshop.endTime.substring(3,5));
+	$scope._workshop.endTimeMeridian = $scope.workshop.endTime.length == 7 ? $scope.workshop.endTime.substring(5, 7) : $scope.workshop.endTime.substring(6,8);
+	$scope._workshop.isPaid = $scope.workshop.isPaid;
+	$scope._workshop.price = $scope.workshop.price;
+	$scope._workshop.currency = $scope.workshop.currency;
+	$scope._workshop.facebookUrl = $scope.workshop.facebookUrl;
+	$scope._workshop.ticketsUrl = $scope.workshop.ticketsUrl;
+
+	$scope.getAppMatches = function(searchText) {
+	    return $http
+	      .get(`${resourceUri}/auth/locations/search/${searchText}`)
+	      .then(function(response) {
+	    	  // Map the response object to the data object.
+	    	  return response.data;
+	      });
+	};
+
+	$scope.submit = function() {
+		console.log($scope._workshop);
+		// submit data
+		$http.put(`${resourceUri}/auth/workshops/${$scope.workshop.idWorkshop}`, {
+			name: $scope._workshop.name,
+			description: encodeURIComponent($scope._workshop.description),
+			startDate: $scope._workshop.startDate.getDate() + "-" + ($scope._workshop.startDate.getMonth() + 1) + "-" + $scope._workshop.startDate.getFullYear(),
+			startTime: $scope._workshop.startTimeHours + ":" + $scope._workshop.startTimeMinutes + " " + $scope._workshop.startTimeMeridian,  // time format for api
+			endDate: $scope._workshop.endDate.getDate() + "-" + ($scope._workshop.endDate.getMonth() + 1) + "-" + $scope._workshop.endDate.getFullYear(),
+			endTime: $scope._workshop.endTimeHours + ":" + $scope._workshop.endTimeMinutes + " " + $scope._workshop.endTimeMeridian,
+			isPaid: $scope._workshop.isPaid,
+			price: $scope._workshop.isPaid ? $scope._workshop.price : null,
+			currency: $scope._workshop.isPaid ? $scope._workshop.currency : null,
+			facebookUrl: $scope._workshop.facebookUrl,
+			ticketsUrl: $scope._workshop.ticketsUrl,
+			// dependencies
+			subGroupId: $stateParams.idSubgroup, // parent
+			locationId: !$scope._workshop.isNewLocation ? self.selectedLocation.idLocation : null,
+			locationAddress: $scope._workshop.isNewLocation ? $scope.address.components.street + " " + $scope.address.components.streetNumber : null,
+			locationCity: $scope._workshop.isNewLocation ? $scope.address.components.city : null,
+			locationCountry: $scope._workshop.isNewLocation ? $scope.address.components.country : null,
+			locationLatitude: $scope._workshop.isNewLocation ? $scope.address.components.location.lat : null,
+			locationLongitude: $scope._workshop.isNewLocation ? $scope.address.components.location.long : null
+		})
+		.then(function successCallback(response) {
+			console.log("saved!");
+			$mdToast.show(
+		      $mdToast.simple()
+		        .textContent('Workshop updated!')
+		        .position("bottom right")
+		        .hideDelay(1500)
+			);
+
+			$state.go("workshop.general", { idWorkshop: $scope.workshop.idWorkshop }, { reload: true });
+		},
+		function errorCallback(response) {
+			$mdToast.show(
+		      $mdToast.simple()
+		        .textContent('Something went wrong :(')
+		        .position("bottom right")
+		        .hideDelay(1500)
+			);
+		});
+	};
+
+	$scope.delete = function(ev) {
+		var confirm = $mdDialog.confirm()
+	        .title('Are you sure you want to delete this workshop?')
+	        .textContent('All of the data associated with this instance will be permanently lost.')
+	        .ariaLabel('Confirmation')
+	        .targetEvent(ev)
+	        .ok('Delete')
+	        .cancel('Cancel');
+
+		$mdDialog.show(confirm)
+		.then(function() {
+			$http.delete(`${resourceUri}/auth/workshops/${$scope.workshop.idWorkshop}`)
+			.then(function successCallback(response) {
+				console.log("deleted!");
+				$mdToast.show(
+			      $mdToast.simple()
+			        .textContent('Workshop deleted!')
+			        .position("bottom right")
+			        .hideDelay(1500)
+				);
+
+				$state.go("subgroup.general", { idSubgroup: $scope.workshop.subGroupId }, {});
+			}, function errorCallback(response) {
+				$mdToast.show(
+			      $mdToast.simple()
+			        .textContent('Something went wrong :(')
+			        .position("bottom right")
+			        .hideDelay(1500)
+				);
+			});
+
+	    }, function() {
+	      // canceled
+	    });
+	};
+
+});
+
+
+/*========== Dialog controllers ==========*/
+
+
+// Controller for: add-group-dialog.tmpl.html
+function AddGroupDialogController($scope, $mdDialog, $http, $state, $mdToast, authService) {
+
+	$scope.actionsDisabled = false;
+
+	$scope.hide = function() {
+	    $mdDialog.hide();
+	};
+
+	$scope.cancel = function() {
+	    $mdDialog.cancel();
+	};
+
+	$scope.submit = function() {
+	    var user = authService.getAuthenticatedUser();
+
+		$http.post(`${resourceUri}/auth/groups/${user.email}`, {
+			name: $scope._group.name,
+			description: encodeURIComponent($scope._group.description)
+		})
+		.then(function successCallback(response) {
+			console.log("saved!");
+			$mdToast.show(
+		      $mdToast.simple()
+		        .textContent('Group added!')
+		        .position("bottom right")
+		        .hideDelay(1500)
+			);
+			// pass data retrieved to parent controller
+			$mdDialog.hide(response.data);
+			// go to group state
+			$state.go("group.general", { idGroup: response.data.idGroup }, {});
+		},
+		function errorCallback(response) {
+			$mdToast.show(
+		      $mdToast.simple()
+		        .textContent('Something went wrong :(')
+		        .position("bottom right")
+		        .hideDelay(1500)
+			);
+		});
+	  };
+};
+
+// Controller for: add-subgroup-dialog.tmpl.html
+function AddSubgroupDialogController($scope, $mdDialog, $http, $stateParams, $state, $mdToast, authService) {
+
+	$scope.actionsDisabled = false;
+	console.log($stateParams.idGroup);
+
+	$scope.hide = function() {
+	    $mdDialog.hide();
+	};
+
+	$scope.cancel = function() {
+	    $mdDialog.cancel();
+	};
+
+	$scope.submit = function() {
+		console.log($scope._subgroup);
+		var user = authService.getAuthenticatedUser();
+		// submit data
+		$http.post(`${resourceUri}/auth/subgroups/${user.email}`, {
+			name: $scope._subgroup.name,
+			description: encodeURIComponent($scope._subgroup.description),
+			groupId: $stateParams.idGroup // parent
+		})
+		.then(function successCallback(response) {
+			console.log("saved!");
+			$mdToast.show(
+		      $mdToast.simple()
+		        .textContent('Subgroup added!')
+		        .position("bottom right")
+		        .hideDelay(1500)
+			);
+			// pass data retrieved to parent controller
+			$mdDialog.hide(response.data);
+			// go to subgroup state
+			$state.go("subgroup.general", { idSubgroup: response.data.idSubGroup }, {});
+		},
+		function errorCallback(response) {
+			$mdToast.show(
+		      $mdToast.simple()
+		        .textContent('Something went wrong :(')
+		        .position("bottom right")
+		        .hideDelay(1500)
+			);
+		});
+	  };
+};
+
+// Controller for: add-group-member-dialog.tmpl.html
+function AddGroupMemberDialogController($rootScope, $scope, $mdDialog, $http, $stateParams, $state, $mdToast, group) {
+
+	$scope.group = group; // receiving data from parent controller
+
+	$scope.hide = function() {
+	    $mdDialog.hide();
+	};
+
+	$scope.cancel = function() {
+	    $mdDialog.cancel();
+	};
+
+	$scope.answer = function(answer) {
+		$mdDialog.hide(answer);
+	};
+
+	$scope.addMember = function(fabber) {
+		$rootScope.isLoading = true;
+
+		$http.post(`${resourceUri}/auth/groups/${$stateParams.idGroup}/members`, {
+			fabberId: fabber.idFabber
+		}).then(function successCallback(response) {
+			console.log("added!");
+			$mdToast.show(
+		      $mdToast.simple()
+		        .textContent('Member added!')
+		        .position("bottom right")
+		        .hideDelay(1500)
+			);
+			// pass data retrieved to parent controller
+			//$mdDialog.hide(response.data);
+			$scope.answer("ok");
+			$rootScope.isLoading = false;
+		}, function errorCallback(response) {
+			$mdToast.show(
+		      $mdToast.simple()
+		        .textContent('Something went wrong :(')
+		        .position("bottom right")
+		        .hideDelay(1500)
+			);
+			$scope.answer("error");
+			$rootScope.isLoading = false;
+		});
+	};
+
+	$scope.sendInvitationEmail = function(email) {
+		$http.post(`${resourceUri}/auth/groups/${$stateParams.idGroup}/members/send-invitation-email`, {
+			email: email
+		}).then(function successCallback(response) {
+			console.log("sent invitation!");
+			$mdToast.show(
+		      $mdToast.simple()
+		        .textContent('An email invitation has been sent!')
+		        .position("bottom right")
+		        .hideDelay(1500)
+			);
+			// pass data retrieved to parent controller
+			$mdDialog.hide(response.data);
+		}, function errorCallback(response) {
+			$mdToast.show(
+		      $mdToast.simple()
+		        .textContent('Something went wrong :(')
+		        .position("bottom right")
+		        .hideDelay(1500)
+			);
+		});
+	};
+
+	$scope.getMatches = function(searchText) {
+	    return $http
+	      .get(`${resourceUri}/auth/groups/${$stateParams.idGroup}/members/autocomplete/${searchText}`)
+	      .then(function(response) {
+	    	  // Map the response object to the data object.
+	    	  return response.data;
+	      });
+	};
+
+	$scope.validateEmail = function(email) {
+	    var re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+	    return re.test(String(email).toLowerCase());
+	}
+
+};
+
+
+//================= Custom filters =====================
+
+app.filter('UTCToNow', ['moment', function (moment) {
+    return function (input, format) {
+       if(format) {
+    	   return moment.utc(input).local().format('dddd, MMMM Do YYYY, h:mm:ss a');
+       }
+       else {
+    	   return moment.utc(input).local();
+       }
+    };
+}]);
+
+app.filter('decodeURIComponent', function($window) {
+    return $window.decodeURIComponent;
+});
+
+
+//================= Custom directives =====================
+
+// Defining a custom directive for handling the user avatar
+// extracted from: http://plnkr.co/edit/UHq23coTUSrwnMKq1Itv?p=preview
+app.directive('userAvatar', ["avatarService", function (avatarService) {
+	var controller = function ($scope) {
+		$scope.$watch("mFabber", function(newValue, oldValue, scope) {
+			if (newValue) {
+				$scope.imageAvailable = false;
+				if (!$scope.mFabber.avatar) {
+					$scope.genericAvatar = avatarService.getAvatar($scope.mFabber);
+				} else {
+					$scope.imageAvailable = true;
+				}
+			}
+        });
+	};
+	return {
+		restrict: 'E',
+		scope: {
+			mFabber: '=fabber',
+			avatarWidth: '@avatarW',
+			avatarHeight: '@avatarH',
+			avatarFontSize: '@avatarFontSize'
+		},
+		template: '<div class="generic-avatar" style="width: {{avatarWidth}}px; height: {{avatarHeight}}px;">' +
+			'<div class="avatar-circle" style="background-color: {{genericAvatar.background}};"></div>' +
+			'<span class="name" style="font-size: {{avatarFontSize}}px;">{{genericAvatar.initials}}</span>' +
+			'<div class="img-avatar" data-ng-if="imageAvailable" style="background-image: url({{mFabber.avatar}})"></div>' +
+			'</div>',
+		controller: controller
+	};
+}])
+.factory("avatarService", function(){
+    var avatarService = function(fabber) {
+    	var colorCodes = ["#1abc9c", "#2ecc71", "#3498db", "#9b59b6", "#34495e", "#16a085", "#27ae60",
+    	                  "#2980b9", "#8e44ad", "#2c3e50", "#f1c40f", "#e67e22", "#e74c3c", "#95a5a6",
+    	                  "#f39c12", "#d35400", "#c0392b", "#bdc3c7", "#7f8c8d"];
+
+		var i1 = "", i2 = "", nameArray = [];
+		if (angular.isDefined(fabber.name)) {
+			i1 = fabber.name.charAt(0).toUpperCase();
+			nameArray = fabber.name.split(" ");
+			if (nameArray.length > 2) {
+				i2 = nameArray[nameArray.length - 1].charAt(0).toUpperCase();
+			} else {
+				i2 = nameArray[1].charAt(0).toUpperCase();
+			}
+		} else {
+			i1 = fabber.firstName.charAt(0).toUpperCase();
+			nameArray = fabber.lastName.split(" ");
+			if (nameArray.length > 2) {
+				i2 = nameArray[nameArray.length - 1].charAt(0);
+			} else {
+				i2 = nameArray[0].charAt(0).toUpperCase();
+			}
+		}
+		var initials = i1 + "" + i2;
+		var charIndex = initials.charCodeAt(0) - 48,
+	    	colourIndex = charIndex % 19;
+
+		var background = colorCodes[colourIndex];
+		return ({ "initials": initials, "background": background });
+    }
+    return {
+      getAvatar: avatarService
+    }
+});
+
+// Group avatar
+app.directive('groupAvatar', ["groupAvatarService", "$sce", function (groupAvatarService, $sce) {
+	var controller = function ($scope) {
+		$scope.$watch("mGroup", function(newValue, oldValue, scope) {
+			if (newValue) {
+				$scope.imageAvailable = false;
+				if (!$scope.mGroup.photoUrl) {
+					$scope.genericAvatar = groupAvatarService.getAvatar($scope.mGroup);
+				} else {
+					$scope.imageAvailable = true;
+					// create url with fit parameters
+					//var fileName = $scope.mGroup.photoUrl.split("/").pop();
+					//var url = "http://res.cloudinary.com/dymje6shc/image/upload/w_220,h_165,c_fit/" + fileName;
+
+					//$scope.mGroup.photoUrlWithParameters = url;
+					//console.log($scope.mGroup.photoUrlWithParameters);
+				}
+			}
+        });
+	};
+	return {
+		restrict: 'E',
+		scope: {
+			mGroup: '=group',
+			avatarWidth: '@avatarW',
+			avatarHeight: '@avatarH',
+			avatarFontSize: '@avatarFontSize'
+		},
+		template: '<div ng-if="!imageAvailable" class="generic-avatar" style="width: {{avatarWidth}}px; height: {{avatarHeight}}px;">' +
+				  	'<div class="avatar-squared" style="background-color: {{genericAvatar.background}};"></div>' +
+				  	'<span class="name" style="font-size: {{avatarFontSize}}px;">{{genericAvatar.initials}}</span>' +
+				  '</div>' +
+				  '<div ng-if="imageAvailable" class="img-avatar">' +
+				  	'<img ng-src="http://res.cloudinary.com/dymje6shc/image/upload/w_220,h_165,c_fit/{{mGroup.photoUrl}}" />' +
+				  '</div>',
+		controller: controller
+	};
+}])
+.factory("groupAvatarService", function() {
+    var groupAvatarService = function(group) {
+        //group = group[0];
+
+    	var colorCodes = ["#1abc9c", "#2ecc71", "#3498db", "#9b59b6", "#34495e", "#16a085", "#27ae60",
+    	                  "#2980b9", "#8e44ad", "#2c3e50", "#f1c40f", "#e67e22", "#e74c3c", "#95a5a6",
+    	                  "#f39c12", "#d35400", "#c0392b", "#bdc3c7", "#7f8c8d"];
+
+		var i1 = "", nameArray = [];
+		i1 = group.name.charAt(0).toUpperCase();
+
+		var initials = i1;
+		var charIndex = initials.charCodeAt(0) - 48,
+	    	colourIndex = charIndex % 19;
+
+		var background = colorCodes[colourIndex];
+		return ({ "initials": initials, "background": background });
+    }
+    return {
+      getAvatar: groupAvatarService
+    }
+});
+
+
+app.factory("authService", function($http, $auth) {
+    var id_token = $auth.getToken();
+    if (id_token === undefined || id_token === null) {
+        console.log("id_token is undefined or null");
+        return;
+    }
+
+    console.log(id_token);
+    var jwtPayload = parseJwt(id_token);
+
+    var userApiUrl = `${resourceUri}/auth/fabbers/me/profile/${jwtPayload.email}`;
+    var authenticatedUser = null;
+
+    var fetchAuthenticatedUser = function() {
+        return $http({
+                cache: true,
+                method: 'GET',
+                url: userApiUrl
+               })
+               .then(response => {
+                    authenticatedUser = response.data;
+                    return response.data;
+                })
+                .catch(response => {
+                    console.log("Could not fetch user data from resource server");
+                });
+    }
+    var getAuthenticatedUser = function() {
+                return authenticatedUser;
+              };
+
+    return { fetchAuthenticatedUser: fetchAuthenticatedUser, getAuthenticatedUser: getAuthenticatedUser };
+});
+
+/**
+ * Returns a JS object representation of a Javascript Web Token from its common encoded
+ * string form.
+ */
+function parseJwt(token) {
+  try {
+    return JSON.parse(atob(token.split('.')[1]));
+  } catch(error) {
+    return undefined;
+  }
+}

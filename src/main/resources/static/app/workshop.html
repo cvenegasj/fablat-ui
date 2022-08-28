@@ -1,0 +1,31 @@
+<div layout="column" ng-controller="WorkshopCtrl">
+	<md-toolbar md-whiteframe="1" md-theme="neutral" class="md-hue-1">
+    	<div class="md-toolbar-tools">
+	    	<h2 md-truncate>
+	    		<a ui-sref="groups" class="custom-anchor-1"><span>Groups</span></a>
+	    		<span><md-icon md-font-set="material-icons">keyboard_arrow_right</md-icon></span>
+	    		<a ui-sref="group.general({ idGroup: workshop.groupId })" class="custom-anchor-1"><span>{{ workshop.groupName }}</span></a>
+	    		<span><md-icon md-font-set="material-icons">keyboard_arrow_right</md-icon></span>
+	    		<a ui-sref="subgroup.general({ idSubgroup: workshop.subGroupId })" class="custom-anchor-1"><span>{{ workshop.subGroupName }}</span></a>
+	    		<span><md-icon md-font-set="material-icons">keyboard_arrow_right</md-icon></span>
+	    		<span class="uppercase">{{ workshop.name }}</span>
+	    	</h2>
+		</div>
+	</md-toolbar>
+	
+	<div layout-xs="column" layout="row">
+		<!-- side nav -->	
+		<div flex="none" class="md-padding" style="margin-top: 10px;">
+			<nav class="custom-sidenav-1">
+				<ul>
+					<li><a ui-sref="workshop.general" ui-sref-active="active" class="custom-anchor-1">General</a></li>
+					<li><a ui-sref="workshop.tutors" ui-sref-active="active" class="custom-anchor-1">Tutors</a></li>
+					<li><a ui-sref="workshop.settings.general" ui-sref-active="active" class="custom-anchor-1" ng-if="workshop.amITutor">Settings</a></li>
+				</ul>
+			</nav>
+		</div>
+		
+		<!-- main content -->
+		<div ui-view flex></div>
+	</div>	
+</div>

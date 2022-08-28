@@ -1,0 +1,63 @@
+<div layout="column" ng-controller="GroupsCtrl">
+	<md-toolbar md-whiteframe="1" md-theme="neutral" class="md-hue-1">
+    	<div class="md-toolbar-tools" >
+	    	<h2 flex md-truncate>Groups</h2>
+	    	<span flex></span>
+	    	<md-button class="md-raised md-accent" ng-click="addGroup($event)">New group</md-button> 
+	    	
+	    	<md-autocomplete id="autocomplete-groups" md-selected-item="selectedItem" md-search-text="searchText" md-items="item in getMatches(searchText)" 
+				md-item-text="item.name" md-clear-button="true" md-min-length="1" placeholder="Search group" md-menu-class="autocomplete-groups-template" flex="30">
+				<md-item-template>
+			    	<a ui-sref="group.general({ idGroup: item.idGroup })" class="custom-anchor-1" 
+			    	style="text-decoration: none; display: block;" md-colors="{color: 'default-accent-900'}">
+			    		{{ item.name }}
+			    	</a>
+			  	</md-item-template>
+			  	<md-not-found>
+			  		No matches found.
+			  	</md-not-found>
+			</md-autocomplete>
+		</div>
+	</md-toolbar>
+	
+	<!-- Cards container -->
+	<div layout="row" layout-align="none" layout-wrap style="margin: 35px 45px;">
+		<div flex-xs="100" flex-sm="50" flex-gt-sm="25" ng-repeat="item in groups">
+			<md-card class="custom-card-4" flex>
+		        
+		        <img ng-if="!item.photoUrl" src="images/no-image.jpg" style="width: 100%; height: auto;" />
+		        
+				<cl-image ng-if="item.photoUrl" public-id="{{item.photoUrl}}">
+					<cl-transformation aspect-ratio="4:3" crop="fill" quality="auto">
+					</cl-transformation>
+					<cl-transformation width="auto" dpr="auto" crop="scale">
+  					</cl-transformation>
+				</cl-image>
+		        
+		        <div class="header">
+		        	<h3>
+		        		<a ui-sref="group.general({ idGroup: item.idGroup })" class="custom-anchor-2"><span class="title">{{ item.name }}</span></a>
+		        	</h3>	
+		        </div>
+		        <div class="content">
+		        	<p class="description">
+		            	{{ item.description | decodeURIComponent }}
+		          	</p>
+		          	<p class="summary">
+		          		{{ item.membersCount === 1 ? "1 member" : item.membersCount + " members" }} · {{ item.subGroupsCount }} subgroups
+		          	</p>
+		        </div>
+		        <div class="actions" layout="column" layout-align="center stretch">
+		        	<md-button class="md-accent" ng-click="joinGroup(item.idGroup)" ng-if="!item.amIMember">Join</md-button>
+		          	<md-button class="" ui-sref="group.general({ idGroup: item.idGroup })" ng-if="item.amIMember">View</md-button>
+		        </div>
+		     </md-card>
+	     </div>
+	</div>
+	
+	<md-button class="md-fab md-fab-bottom-right md-accent" style="position: fixed !important;" aria-label="Add" ng-click="addGroup($event)">
+		<md-tooltip md-direction="left" md-visible="tooltipVisible">Create a group</md-tooltip>
+    	<md-icon md-font-set="material-icons" aria-label="Add">add</md-icon>
+    </md-button>
+
+</div>
