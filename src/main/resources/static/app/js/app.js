@@ -1,9 +1,7 @@
 var app = angular.module('FabLatApp', [ 'ui.router', 'ngMaterial', 'ngMessages', 'angularMoment',
     'vsGoogleAutocomplete', 'ngFileUpload', 'cloudinary', 'satellizer' ]);
-//var uiUri = 'http://127.0.0.1:8080';
 //var resourceUri = 'http://127.0.0.1:5000';
-var resourceUri = 'http://fablatres-env.eba-wpahxg8r.us-east-1.elasticbeanstalk.com';
-//var authUri = 'http://auth-server:9000';
+var resourceUri = 'https://fablat-res.symbiocreation.net';
 
 
 // Configuration for Google OAuth2
@@ -81,13 +79,17 @@ app.config(function($mdThemingProvider, $mdIconProvider, $urlRouterProvider, $st
         abstract: true,
         url: '/',
         templateUrl: 'dashboard.html',
-//        resolve: {
-//            requireAuthentication = function($location, $auth) {
-//                                         if (!$auth.isAuthenticated()) {
-//                                             return $window.location.href = '/';
-//                                         }
-//                                    }
-//        }
+        resolve: {
+            requireAuthentication: function($window, $auth, $q, $timeout) {
+                var deferred = $q.defer();
+
+                if (!$auth.isAuthenticated()) {
+                    $window.location.href = '/';
+                }
+
+                return deferred.resolve();
+           }
+        }
     });
 
     $stateProvider.state({
@@ -195,7 +197,7 @@ app.config(function($mdThemingProvider, $mdIconProvider, $urlRouterProvider, $st
 	        			if (response.data.amIMember) {
 	        				deferred.resolve();
 	        			} else {
-	        				$timeout(function () {
+	        				$timeout(function() {
 	    				      $state.go("group-out", { idGroup: $stateParams.idGroup }, {});
 	    				    });
 	        				deferred.reject();
@@ -488,7 +490,7 @@ app.controller('AppCtrl', ['$rootScope', '$http', '$state', '$location', '$windo
 //  $http.get(`${resourceUri}/hello`)
 //        .then(res => console.log(res));
 
-  authService.fetchAuthenticatedUser()
+    authService.fetchAuthenticatedUser()
       .then(user => {
         console.log("Signed in user:");
         console.log(user);
@@ -500,16 +502,20 @@ app.controller('AppCtrl', ['$rootScope', '$http', '$state', '$location', '$windo
         $rootScope.user.hasAdminLabRole = user.authorities.find(x => x === 'ROLE_ADMIN_LAB') ? true : false;
       });
 
-
-    //TODO: check logout() implementation
     $scope.logout = function() {
-        $http.post('/login?logout', {})
+        /*$http.post('/login?logout', {})
             .finally(function() {
                 $rootScope.authenticated = false;
                 $rootScope.user = {};
                 $window.location.href = '/';
                 console.log("Logout successful.");
-            });
+            });*/
+
+        $auth.logout();
+        $rootScope.authenticated = false;
+        $rootScope.user = {};
+        $window.location.href = '/';
+        console.log("Logout successful.");
     }
 
     // Toolbar search toggle
@@ -528,22 +534,22 @@ app.controller('AppCtrl', ['$rootScope', '$http', '$state', '$location', '$windo
 /*========== General controllers ==========*/
 
 // Controller in: dashboard.html
-app.controller('DashboardCtrl', function($rootScope, $scope, $http, authService) {
+app.controller('DashboardCtrl', function($scope) {
 
-	$rootScope.isLoading = true;
-	$scope.loading1 = true;
+//	$rootScope.isLoading = true;
+//	$scope.loading1 = true;
 
 	$scope.currentNavItem = 'groups';
 
-    authService.fetchAuthenticatedUser()
+    /*authService.fetchAuthenticatedUser()
         .then(user => {
-            //console.log(response.data);
+            console.log(user);
             $scope.fabber = user;
         }).finally(function() {
             // called no matter success or failure
             $scope.loading1 = false;
             $rootScope.isLoading = false;
-        });
+        });*/
 });
 
 // Controller in: dashboard.groups.html
@@ -785,6 +791,12 @@ app.controller('SettingsProfileCtrl', function($rootScope, $scope, $http, $state
 		})
 		.then(response => {
 			console.log("saved!");
+
+			// update user object in $rootScope
+			$rootScope.user = response.data;
+            $rootScope.user.hasAdminGeneralRole = user.authorities.find(x => x === 'ROLE_ADMIN_GENERAL') ? true : false;
+            $rootScope.user.hasAdminLabRole = user.authorities.find(x => x === 'ROLE_ADMIN_LAB') ? true : false;
+
 			$mdToast.show(
 		      $mdToast.simple()
 		        .textContent('Info updated!')
@@ -881,7 +893,7 @@ app.controller('FabberCtrl', function($scope, $http, $stateParams) {
 
 	// Injects the fabber object in the parent scope
 	$http.get(`${resourceUri}/auth/fabbers/${$stateParams.idFabber}`)
-		.then(function(response) {
+		.then(response => {
 			$scope.fabberLocal = response.data;
 		}).finally(function() {
 		    // called no matter success or failure
@@ -896,7 +908,7 @@ app.controller('FabberGroupsCtrl', function($scope, $http, $stateParams, $state)
 	$scope.groups2 = [];
 	$scope.groups3 = [];
 
-	$http.get(`${resourceUri}/auth/groups/find-all-fabber/$stateParams.idFabber`)
+	$http.get(`${resourceUri}/auth/groups/find-all-fabber/${$stateParams.idFabber}`)
 		.then(function(response) {
 			if (response.data.length === 0) {
 				$scope.noGroups = true;
@@ -1997,7 +2009,7 @@ app.filter('decodeURIComponent', function($window) {
 
 // Defining a custom directive for handling the user avatar
 // extracted from: http://plnkr.co/edit/UHq23coTUSrwnMKq1Itv?p=preview
-app.directive('userAvatar', ["avatarService", function (avatarService) {
+app.directive('userAvatar', ["avatarService", function(avatarService) {
 	var controller = function ($scope) {
 		$scope.$watch("mFabber", function(newValue, oldValue, scope) {
 			if (newValue) {
@@ -2026,13 +2038,15 @@ app.directive('userAvatar', ["avatarService", function (avatarService) {
 		controller: controller
 	};
 }])
-.factory("avatarService", function(){
+.factory("avatarService", function() {
     var avatarService = function(fabber) {
+        if (angular.equals(fabber, {})) return;
+
     	var colorCodes = ["#1abc9c", "#2ecc71", "#3498db", "#9b59b6", "#34495e", "#16a085", "#27ae60",
     	                  "#2980b9", "#8e44ad", "#2c3e50", "#f1c40f", "#e67e22", "#e74c3c", "#95a5a6",
     	                  "#f39c12", "#d35400", "#c0392b", "#bdc3c7", "#7f8c8d"];
-
 		var i1 = "", i2 = "", nameArray = [];
+
 		if (angular.isDefined(fabber.name)) {
 			i1 = fabber.name.charAt(0).toUpperCase();
 			nameArray = fabber.name.split(" ");

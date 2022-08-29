@@ -1,17 +1,17 @@
 <div layout-gt-sm="row" layout="column" ng-controller="DashboardCtrl">
 	<div style="padding: 15px 35px;" layout="column" flex-gt-sm="25" flex>
 		<div layout="column" layout-align="center center" style="margin-top: 15px; margin-bottom: 35px;">
-			<user-avatar fabber="fabber" avatar-w="100" avatar-h="100" avatar-font-size="40"></user-avatar>
-			<div class="md-headline" style="margin-top: 5px;">{{ fabber.firstName }} {{ fabber.lastName }}</div>
-			<div class="font-14 centered"><span>{{ fabber.email }}</span> <span class="color-4" ng-if="user.hasAdminGeneralRole">[ADMIN_GENERAL]</span></div>
-			<div class="font-14 centered"><span>{{ fabber.isNomade ? "Fab Nomade" : fabber.labName }}</span> <span class="color-4" ng-if="user.hasAdminLabRole">[ADMIN_LAB]</span></div>
+			<user-avatar fabber="user" avatar-w="100" avatar-h="100" avatar-font-size="40"></user-avatar>
+			<div class="md-headline" style="margin-top: 5px;">{{ user.firstName }} {{ user.lastName }}</div>
+			<div class="font-14 centered"><span>{{ user.email }}</span> <span class="color-4" ng-if="user.hasAdminGeneralRole">[ADMIN_GENERAL]</span></div>
+			<div class="font-14 centered"><span>{{ user.isNomade ? "Fab Nomade" : user.labName }}</span> <span class="color-4" ng-if="user.hasAdminLabRole">[ADMIN_LAB]</span></div>
 		</div>
 		<div layout-gt-sm="column" layout="row">
 			<md-card flex layout="column" layout-align="start center" md-theme="darkPink" class="custom-card-1" layout-fill>
 				<div style="height: 67px;">
 					<div class="font-14">Total score</div>
 					<div>
-						<md-icon md-svg-icon="seal" class="icon-25"></md-icon> <span class="font-18">{{ fabber.generalScore }}</span>
+						<md-icon md-svg-icon="seal" class="icon-25"></md-icon> <span class="font-18">{{ user.generalScore }}</span>
 					</div>
 				</div>
 			</md-card>
@@ -19,7 +19,7 @@
 				<div style="height: 67px;">
 					<div class="font-14">Coordinator</div>
 					<div>
-						<md-icon md-svg-icon="headset" class="icon-25"></md-icon> <span class="font-18">{{ fabber.coordinatorScore }}</span>
+						<md-icon md-svg-icon="headset" class="icon-25"></md-icon> <span class="font-18">{{ user.coordinatorScore }}</span>
 					</div>
 				</div>
 			</md-card>
@@ -27,7 +27,7 @@
 				<div style="height: 67px;">
 					<div class="font-14">Collaborator</div>
 					<div>
-						<md-icon md-svg-icon="puzzle" class="icon-25"></md-icon> <span class="font-18">{{ fabber.collaboratorScore }}</span>
+						<md-icon md-svg-icon="puzzle" class="icon-25"></md-icon> <span class="font-18">{{ user.collaboratorScore }}</span>
 					</div>
 				</div>
 			</md-card>
@@ -35,7 +35,7 @@
 				<div style="height: 67px;">
 					<div class="font-14">Replicator</div>
 					<div>
-						<md-icon md-svg-icon="content-copy" class="icon-25"></md-icon> <span class="font-18">{{ fabber.replicatorScore }}</span>
+						<md-icon md-svg-icon="content-copy" class="icon-25"></md-icon> <span class="font-18">{{ user.replicatorScore }}</span>
 					</div>
 				</div>
 			</md-card>
@@ -43,7 +43,7 @@
 				<div style="height: 67px;">
 					<div class="font-14">Goal for this week</div>
 					<md-content class="font-16" style="max-height: 57px;">
-						{{ fabber.weekGoal ? fabber.weekGoal : "" }}
+						{{ user.weekGoal ? user.weekGoal : "" }}
 					</md-content>
 				</div>
 			</md-card>
