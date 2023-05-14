@@ -14,7 +14,7 @@ import java.util.UUID;
 
 @RestController
 @Slf4j
-public class UtilController {
+public class UiController {
 
     @GetMapping("/healthcheck")
     public Map<String, Object> healthcheck() {
@@ -45,7 +45,6 @@ public class UtilController {
                 .doOnNext(obj -> log.info(obj.toString()));
                 //.log();
     }
-
 
 
 //    @Autowired

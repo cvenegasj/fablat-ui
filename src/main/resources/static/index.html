@@ -1,11 +1,11 @@
 <!DOCTYPE html>
-<html ng-app="FabLatAppPublic">
+<html ng-app="FabLatApp">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="initial-scale=1" />
 
-    <title>Red Latinoamericana de Fab Labs</title>
-    <meta name="description" content="Red Latinoamericana de Fab Labs" />
+    <title>Fab Lat</title>
+    <meta name="description" content="">
     <meta property="fb:admins" content="1296933646" />
     <meta property="og:site_name" content="Fab Lat" />
     <meta property="og:title" content="Fab Lat" />
@@ -14,107 +14,69 @@
     <meta property="og:image" content="" />
     <meta property="og:url" content="" />
 
-    <!--Import Google Icon Font-->
-    <link href="https://fonts.googleapis.com/css?family=Poppins:500,700|Raleway:200,400" rel="stylesheet">
-    <!-- <link href="fonts/ionicons-2.0.1/css/ionicons.css" type="text/css" rel="stylesheet" media="screen,projection"/> -->
-    <!--Import materialize.css-->
-<!--    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/css/materialize.min.css">-->
-
-    <!-- Angular Material -->
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700,400italic">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/angular-material/1.1.4/angular-material.min.css">
-    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
-    <link rel="stylesheet" href="css/public.css">
-    <link rel="stylesheet" href="css/style.css" media="screen,projection">
+    <link rel="stylesheet" href="css/app.css">
 
     <!-- Favicon -->
-    <link rel="apple-touch-icon-precomposed" sizes="57x57" href="apple-touch-icon-57x57.png" />
-    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="apple-touch-icon-114x114.png" />
-    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="apple-touch-icon-72x72.png" />
-    <link rel="apple-touch-icon-precomposed" sizes="144x144" href="apple-touch-icon-144x144.png" />
-    <link rel="apple-touch-icon-precomposed" sizes="60x60" href="apple-touch-icon-60x60.png" />
-    <link rel="apple-touch-icon-precomposed" sizes="120x120" href="apple-touch-icon-120x120.png" />
-    <link rel="apple-touch-icon-precomposed" sizes="76x76" href="apple-touch-icon-76x76.png" />
-    <link rel="apple-touch-icon-precomposed" sizes="152x152" href="apple-touch-icon-152x152.png" />
-    <link rel="icon" type="image/png" href="favicon-196x196.png" sizes="196x196" />
-    <link rel="icon" type="image/png" href="favicon-96x96.png" sizes="96x96" />
-    <link rel="icon" type="image/png" href="favicon-32x32.png" sizes="32x32" />
-    <link rel="icon" type="image/png" href="favicon-16x16.png" sizes="16x16" />
-    <link rel="icon" type="image/png" href="favicon-128.png" sizes="128x128" />
-    <meta name="application-name" content="&nbsp;"/>
-    <meta name="msapplication-TileColor" content="#FFFFFF" />
-    <meta name="msapplication-TileImage" content="mstile-144x144.png" />
-    <meta name="msapplication-square70x70logo" content="mstile-70x70.png" />
-    <meta name="msapplication-square150x150logo" content="mstile-150x150.png" />
-    <meta name="msapplication-wide310x150logo" content="mstile-310x150.png" />
-    <meta name="msapplication-square310x310logo" content="mstile-310x310.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+    <link rel="manifest" href="/site.webmanifest">
 </head>
 
-<body ng-cloak class="ng-cloak" ng-controller="AppCtrl">
-<div class="navbar-fixed">
-    <nav class="white">
-        <div class="nav-wrapper container">
-            <a href="/" id="logo-container" class="brand-logo">
-                <svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
-                     width="285.06787px" height="46.89941px" viewBox="0 0 285.06787 46.89941" enable-background="new 0 0 285.06787 46.89941"
-                     xml:space="preserve">
-                <g>
-                	<defs>
-                		<rect id="SVGID_1_" x="-452.49268" y="-526.48486" width="1190.5498" height="841.89014"/>
-                	</defs>
-                    <clipPath id="SVGID_2_">
-                		<use xlink:href="#SVGID_1_"  overflow="visible"/>
-                	</clipPath>
-                </g>
-                    <polygon fill="#E95D66" points="0.5,46.39941 0.5,0.50098 28.03906,0.50098 28.03906,9.68066 9.68018,9.68066 9.68018,18.86035
-                	28.03906,18.86035 28.03906,28.04004 9.68018,28.04004 9.68018,46.39941 "/>
-                    <polygon fill="none" stroke="#E75D67" stroke-miterlimit="10" points="0.5,46.39941 0.5,0.50098 28.03906,0.50098 28.03906,9.68066
-                	9.68018,9.68066 9.68018,18.86035 28.03906,18.86035 28.03906,28.04004 9.68018,28.04004 9.68018,46.39941 "/>
-                    <path fill="#E95D66" d="M46.61816,46.39941V9.68066h9.18018v9.17969h18.35889V9.68066h9.18018v36.71875h-9.18018V28.04004H55.79834
-                	v18.35938H46.61816z M55.79834,9.68066h18.35889V0.5H55.79834V9.68066z"/>
-                    <path fill="none" stroke="#E75D67" stroke-miterlimit="10" d="M46.61816,46.39941V9.68066h9.18018v9.17969h18.35889V9.68066h9.18018
-                	v36.71875h-9.18018V28.04004H55.79834v18.35938H46.61816z M55.79834,9.68066h18.35889V0.5H55.79834V9.68066z"/>
-                    <path fill="#E95D66" d="M129.01514,9.68066h-18.35986v9.17969h18.35986v9.17969h-18.35986v9.18066h18.35986v9.17871h-27.53906
-                	V0.50098h27.53906V9.68066z M138.19531,18.86035h-9.18018V9.68066h9.18018V18.86035z M138.19531,37.2207h-9.18018v-9.18066h9.18018
-                	V37.2207z"/>
-                    <path fill="none" stroke="#E75D67" stroke-miterlimit="10" d="M129.01514,9.68066h-18.35986v9.17969h18.35986v9.17969h-18.35986
-                	v9.18066h18.35986v9.17871h-27.53906V0.50098h27.53906V9.68066z M138.19531,18.86035h-9.18018V9.68066h9.18018V18.86035z
-                	 M138.19531,37.2207h-9.18018v-9.18066h9.18018V37.2207z"/>
-                    <polygon fill="#6E96B0" points="165.73291,37.21973 184.09229,37.21973 184.09229,46.39941 156.55322,46.39941 156.55322,0.50098
-                	165.73291,0.50098 "/>
-                    <path fill="#6E96B0" d="M202.67236,46.39941V9.68066h9.17871v9.17969h18.36035V9.68066h9.17871v36.71875h-9.17871V28.04004
-                	h-18.36035v18.35938H202.67236z M211.85107,9.68066h18.35938V0.5h-18.35938V9.68066z"/>
-                    <polygon fill="#6E96B0" points="266.70947,46.39941 266.70947,9.68066 257.52881,9.68066 257.52881,0.50098 285.06787,0.50098
-                	285.06787,9.68066 275.88916,9.68066 275.88916,46.39941 "/>
-                </svg>
-            </a>
+<body layout="row" ng-cloak ng-controller="AppCtrl">
 
-            <ul class="right hide-on-med-and-down">
-                <li><a ui-sref="calendar" class="fablat-blue-text waves-effect font-weight-400">Calendario</a></li>
-                <li><a ui-sref="join" class="fablat-blue-text waves-effect font-weight-400">Únete</a></li>
-                <li><a href="/app/index.html" class="fablat-blue-text waves-effect font-weight-400">Accede</a></li>
-            </ul>
+    <div layout="column" flex role="main">
+        <md-progress-linear md-mode="indeterminate" class="md-hue-1" ng-if="isLoading"></md-progress-linear>
 
-            <!--<a href="#" data-activates="mobile-out" class="nav-menu-button-collapse hide-on-large-only">
-                <i class="material-icons fablat-blue-text">menu</i>
-            </a>-->
-        </div>
-    </nav>
-</div>
-<!--<ul id="mobile-out" class="side-nav">-->
-<!--    <li class="bold"><a ui-sref="calendar" class="fablat-blue-text waves-effect">Calendario</a></li>-->
-<!--    <li class="bold"><a href="/app/index.html" class="fablat-blue-text waves-effect">Accede</a></li>-->
-<!--</ul>-->
+        <md-toolbar md-whiteframe="2">
+            <div class="md-toolbar-tools">
+                <!-- <md-button class="md-icon-button" aria-label="Menu Button" hide-gt-sm ng-click="toggleSidenav('left')">
+                    <md-icon md-font-set="material-icons" aria-label="Menu">menu</md-icon>
+                </md-button> -->
+                <h1>
+                    <a ui-sref="dashboard.groups">Fab Lat</a>
+                </h1>
 
-<button ng-click="authenticate()">Sign in</button>
+                <ul id="main-navbar" class="list-unstyled">
+                    <li>
+                        <a ui-sref="dashboard.groups" ui-sref-active="active">Dashboard</a>
+                    </li>
+                    <li>
+                        <a ui-sref="groups" ui-sref-active="active">Groups</a>
+                    </li>
+                    <li>
+                        <a ui-sref="workshops" ui-sref-active="active">Workshops</a>
+                    </li>
+                </ul>
+                <span flex></span>
+                <md-menu md-offset="0 50" md-position-mode="target-right target" ng-if="user.firstName && user.lastName">
+                    <md-button aria-label="Open user avatar menu" class="md-icon-button" style="height: auto; width: auto;" ng-click="$mdMenu.open($event)">
+                        <user-avatar md-menu-origin fabber="user" avatar-w="38" avatar-h="38" avatar-font-size="18"></user-avatar>
+                    </md-button>
+                    <md-menu-content width="3">
+                        <md-menu-item>
+                            <md-button ui-sref="settings.profile">
+                                Settings
+                            </md-button>
+                        </md-menu-item>
+                        <md-menu-item>
+                            <md-button ng-click="logout()">
+                                Sign out
+                            </md-button>
+                        </md-menu-item>
+                    </md-menu-content>
+                </md-menu>
+            </div>
+        </md-toolbar>
+
+        <md-content flex ui-view class="main-content"></md-content>
+    </div>
 
 
-<md-content flex ui-view></md-content>
-
-<!--<script type="text/javascript" src="https://code.jquery.com/jquery-3.1.1.min.js"></script>-->
-<!--<script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/js/materialize.min.js"></script>-->
-<!--<script type="text/javascript" src="js/init.js"></script>-->
-
+<!-- Dependencies for Cloudinary upload -->
+<script src="js/lodash.min.js"></script>
+<script src="js/cloudinary-core.min.js"></script>
 <!-- Angular Material Dependencies -->
 <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.3/angular.min.js"></script>
 <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.3/angular-route.min.js"></script>
@@ -123,11 +85,21 @@
 <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.3/angular-messages.js"></script>
 <script src="https://unpkg.com/@uirouter/angularjs/release/angular-ui-router.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/angular-material/1.1.4/angular-material.min.js"></script>
-
-<!-- Satellizer for OAuth2 flows -->
+<!-- Date and Time manipulation libraries -->
+<script src="js/moment.min.js"></script>
+<script src="js/angular-moment.min.js"></script>
+<!-- For selecting locations when creating workshops -->
+<script src="https://maps.googleapis.com/maps/api/js?libraries=places&key=AIzaSyDVgX4TuMk8TAWD2VoWvkCCcpgDPQ-MzPs"></script>
+<script src="js/vs-google-autocomplete.js"></script>
+<!-- Angular File upload -->
+<script src="js/ng-file-upload-shim.min.js"></script> <!-- for no html5 browsers support -->
+<script src="js/ng-file-upload.min.js"></script>
+<!-- Cloudinary angular plugin -->
+<script src="js/angular.cloudinary.js"></script>
+<!-- Satellizer -->
 <script src="https://cdn.jsdelivr.net/satellizer/0.15.5/satellizer.min.js"></script>
 
-<script src="js/ngGroup.js"></script>
-<script src="js/public-ng.js"></script>
+<script src="js/app.js"></script>
+
 </body>
 </html>

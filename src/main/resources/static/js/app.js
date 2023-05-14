@@ -1,7 +1,8 @@
-var app = angular.module('FabLatApp', [ 'ui.router', 'ngMaterial', 'ngMessages', 'angularMoment',
+const app = angular.module('FabLatApp', [ 'ui.router', 'ngMaterial', 'ngMessages', 'angularMoment',
     'vsGoogleAutocomplete', 'ngFileUpload', 'cloudinary', 'satellizer' ]);
 //var resourceUri = 'http://127.0.0.1:5000';
-var resourceUri = 'https://fablat-res.symbiocreation.net';
+const resourceUri = 'https://res.fab.lat';
+const landingUri = 'https://fab.lat';
 
 
 // Configuration for Google OAuth2
@@ -79,17 +80,31 @@ app.config(function($mdThemingProvider, $mdIconProvider, $urlRouterProvider, $st
         abstract: true,
         url: '/',
         templateUrl: 'dashboard.html',
-        resolve: {
-            requireAuthentication: function($window, $auth, $q, $timeout) {
-                var deferred = $q.defer();
-
-                if (!$auth.isAuthenticated()) {
-                    $window.location.href = '/';
-                }
-
-                return deferred.resolve();
-           }
-        }
+//        resolve: {
+//           requireAuthentication: function($window, $q, authService) { // goes in every secured page
+//               var deferred = $q.defer();
+//
+//               if (!authService.isAuthenticated) {
+//                  authService.authenticate()
+//                    .then(response => {
+//                        if (response.status === 201) {
+//                            // reload current page to access
+//                            $window.location.reload();
+//                        } else {
+//                            // redirect to landing page
+//                            console.log("'/signup' endpoint from resource server returned an invalid "
+//                                        + "http status code");
+//                            $window.location.href = landingUri;
+//                        }
+//                    });
+//               } else {
+//                  console.log("User is authenticated");
+//                  deferred.resolve();
+//               }
+//
+//               return deferred.promise;
+//          }
+//        }
     });
 
     $stateProvider.state({
@@ -478,17 +493,27 @@ app.config(function($sceDelegateProvider) {
 
 
 
-
-
-
 app.controller('AppCtrl', ['$rootScope', '$http', '$state', '$location', '$window', '$scope', '$auth', 'authService',
                 function($rootScope, $http, $state, $location, $window, $scope, $auth, authService) {
 
+  // Check if user is authenticated across all app
+  if (!authService.isAuthenticated) {
+    authService.authenticate()
+      .then(response => {
+          if (response.status === 201) {
+              // reload whole app
+            $window.location.reload();
+          } else {
+              // redirect to landing page
+              console.log("'/signup' endpoint from resource server returned an invalid "
+                          + "http status code");
+              $window.location.href = landingUri;
+          }
+      });
+ }
+
   $rootScope.isLoading = false;
   $rootScope.user = {};
-
-//  $http.get(`${resourceUri}/hello`)
-//        .then(res => console.log(res));
 
     authService.fetchAuthenticatedUser()
       .then(user => {
@@ -514,7 +539,7 @@ app.controller('AppCtrl', ['$rootScope', '$http', '$state', '$location', '$windo
         $auth.logout();
         $rootScope.authenticated = false;
         $rootScope.user = {};
-        $window.location.href = '/';
+        $window.location.href = landingUri;
         console.log("Logout successful.");
     }
 
@@ -527,7 +552,6 @@ app.controller('AppCtrl', ['$rootScope', '$http', '$state', '$location', '$windo
     $scope.toggleSidenav = function(menuId) {
         $mdSidenav(menuId).toggle();
     };
-
 }]);
 
 
@@ -2137,27 +2161,49 @@ app.directive('groupAvatar', ["groupAvatarService", "$sce", function (groupAvata
     }
 });
 
-
-app.factory("authService", function($http, $auth) {
-    var id_token = $auth.getToken();
-    if (id_token === undefined || id_token === null) {
-        console.log("id_token is undefined or null");
-        return;
-    } else {
-        console.log("id_token retrieved correctly");
-    }
-
-    //console.log(id_token);
-    var jwtPayload = parseJwt(id_token);
-
-    var userApiUrl = `${resourceUri}/auth/fabbers/me/profile/${jwtPayload.email}`;
+/**
+* Returns functions and variables representing authentication state
+*/
+app.service("authService", function($http, $auth, $window) {
+    var isAuthenticated = $auth.isAuthenticated();
+//    console.log(isAuthenticated);
+    var id_token = null;
+    var jwtPayload = null;
     var authenticatedUser = null;
 
-    var fetchAuthenticatedUser = function() {
+    if (isAuthenticated) {
+        id_token = $auth.getToken();
+        if (id_token === undefined || id_token === null) {
+            console.log("id_token is undefined or null");
+        } else {
+            console.log("id_token retrieved correctly");
+            jwtPayload = parseJwt(id_token);
+        }
+    }
+
+    const authenticate = () => {
+        return $auth.authenticate('google')
+            .then(response => {
+                console.log("Signed in with Google!");
+
+                id_token = response.data['id_token'];
+                console.log("id_token read correctly");
+                $auth.setToken(id_token);
+
+                jwtPayload = parseJwt(id_token);
+                console.log(jwtPayload);
+                console.log("id_token parsed correctly");
+
+                // if user is not in fablat DB, create it
+                return $http.post(`${resourceUri}/public/signup`, jwtPayload);
+            });
+    };
+
+    const fetchAuthenticatedUser = () => {
         return $http({
                 cache: true,
                 method: 'GET',
-                url: userApiUrl
+                url: `${resourceUri}/auth/fabbers/me/profile/${jwtPayload.email}`
                })
                .then(response => {
                     authenticatedUser = response.data;
@@ -2166,12 +2212,14 @@ app.factory("authService", function($http, $auth) {
                 .catch(response => {
                     console.log("Could not fetch user data from resource server");
                 });
-    }
-    var getAuthenticatedUser = function() {
+    };
+
+    const getAuthenticatedUser = () => {
         return authenticatedUser;
     };
 
-    return { fetchAuthenticatedUser: fetchAuthenticatedUser, getAuthenticatedUser: getAuthenticatedUser };
+    return { isAuthenticated: isAuthenticated, authenticate: authenticate,
+        fetchAuthenticatedUser: fetchAuthenticatedUser, getAuthenticatedUser: getAuthenticatedUser };
 });
 
 /**
