@@ -1,34 +1,27 @@
 server:
-  port: 5000
+  port: 3000
 
 logging:
   level:
     root: INFO
     org.springframework.web: INFO
-#    org.springframework.security: INFO
-#    org.springframework.security.oauth2: INFO
+    org.springframework.security: INFO
+    com.auth0.example: TRACE
 
-#spring:
-#  security:
-#    oauth2:
-#      client:
-#        registration:
-#          fablat-client-oidc:
-#            provider: spring
-#            client-id: fablat-client
-#            client-secret: secret
-#            authorization-grant-type: authorization_code
-#            redirect-uri: "http://127.0.0.1:8080/login/oauth2/code/{registrationId}"
-#            scope: openid
-#            client-name: fablat-client-oidc
-#          fablat-client-authorization-code:
-#            provider: spring
-#            client-id: fablat-client
-#            client-secret: secret
-#            authorization-grant-type: authorization_code
-#            redirect-uri: "http://127.0.0.1:8080/authorized"
-#            scope: fablat.read
-#            client-name: fablat-client-authorization-code
-#        provider:
-#          spring:
-#            issuer-uri: http://auth-server:9000
+spring:
+  security:
+    oauth2:
+      client:
+        registration:
+          auth0:
+            client-id: rid6ZPjGfNTsGKlDGkQX97ECXJxLuzYa
+            client-secret: LWLSQtLRcBgWDZCSB40Ur71BLWbRRtSy_n7irunr4Jc4vvI7tIgRfQK4KkAfrYo2
+            scope:
+              - openid
+              - profile
+              - email
+        provider:
+          auth0:
+            issuer-uri: https://symbiocreation.auth0.com/
+
+fablat.landing.uri: https://fab.lat

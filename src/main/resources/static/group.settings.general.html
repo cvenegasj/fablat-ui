@@ -80,7 +80,17 @@
 				          		<div ng-message="md-maxlength">The URL has to be less than 300 characters long.</div>
 				       		</div>
 						</md-input-container>
-					</div>		
+					</div>
+					<div layout-gt-sm="row" class="form-group">
+						<label class="control-label" for="symbioUrl" flex-gt-sm="20">Symbiocreation URL</label>
+						<md-input-container md-no-float class="md-block" flex>
+							<input ng-model="_group.symbioUrl" name="symbioUrl" id="symbioUrl" type="url" md-maxlength="300" aria-label="Group secondary URL">
+
+							<div ng-messages="editGroupForm.symbioUrl.$error">
+								<div ng-message="md-maxlength">The URL has to be less than 300 characters long.</div>
+							</div>
+						</md-input-container>
+					</div>
 				</div>
 				<div class="actions" layout="row">
 					<md-button class="md-warn" ng-click="delete()">Delete group</md-button>
