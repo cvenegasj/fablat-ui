@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.Customizer;
+import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity;
 import org.springframework.security.config.web.server.ServerHttpSecurity;
 import org.springframework.security.web.server.SecurityWebFilterChain;
 import org.springframework.security.web.server.authentication.logout.RedirectServerLogoutSuccessHandler;
@@ -13,7 +14,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 import java.net.URI;
 
 @Configuration
-//@EnableWebFluxSecurity
+@EnableWebFluxSecurity
 public class UiServerConfig {
 
     @Value("${spring.security.oauth2.client.provider.auth0.issuer-uri}")
@@ -29,7 +30,7 @@ public class UiServerConfig {
     public SecurityWebFilterChain configure(ServerHttpSecurity http) {
         return http
                 .authorizeExchange(authz -> authz
-//                    .pathMatchers("/", "/images/**").permitAll()
+                    .pathMatchers("/healthcheck").permitAll()
                     .anyExchange().authenticated())
                 .oauth2Login(Customizer.withDefaults())
                 .logout(logout -> logout.logoutSuccessHandler(logoutSuccessHandler()))

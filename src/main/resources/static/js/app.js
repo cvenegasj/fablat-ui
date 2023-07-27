@@ -401,10 +401,10 @@ app.config(function($mdThemingProvider, $mdIconProvider, $urlRouterProvider, $st
         	},
         	workshop: function($http, $stateParams, authService) {
         	    return authService.getAuthenticatedUser()
-        	                .then(user => $http.get(`${resourceUri}/auth/workshops/${$stateParams.idWorkshop}/{user.email}`))
-                            .then(response => {
-                                return response.data;
-                            });
+                        .then(user => $http.get(`${resourceUri}/auth/workshops/${$stateParams.idWorkshop}/${user.email}`))
+                        .then(response => {
+                            return response.data;
+                        });
         	}
         },
         controller: function($scope, workshop) {
@@ -468,16 +468,14 @@ app.config(function($sceDelegateProvider) {
 
 
 
-
 app.controller('AppCtrl', ['$rootScope', '$http', '$scope', 'authService',
-                    function($rootScope, $http, $scope, authService) {
+            function($rootScope, $http, $scope, authService) {
 
     $rootScope.isLoading = false;
-    $rootScope.user = {};
+    $rootScope.user = null;
 
-    authService.getAuthenticatedUser()
+    $rootScope.setAuthUser = authService.getAuthenticatedUser()
         .then(user => {
-            $rootScope.authenticated = true;
             $rootScope.user = user;
             $rootScope.user.hasAdminGeneralRole = user.authorities.find(x => x === 'ROLE_ADMIN_GENERAL') ? true : false;
             $rootScope.user.hasAdminLabRole = user.authorities.find(x => x === 'ROLE_ADMIN_LAB') ? true : false;
@@ -496,7 +494,6 @@ app.controller('AppCtrl', ['$rootScope', '$http', '$scope', 'authService',
 
 
 
-
 /*========== General controllers ==========*/
 
 // Controller in: dashboard.html
@@ -507,15 +504,15 @@ app.controller('DashboardCtrl', function($scope) {
 });
 
 // Controller in: dashboard.groups.html
-app.controller('DashboardGroupsCtrl', function($rootScope, $scope, $http, $mdDialog, authService) {
+app.controller('DashboardGroupsCtrl', function($rootScope, $scope, $http, $mdDialog) {
 
 	$scope.noGroups = false;
 	$scope.groups1 = [];
 	$scope.groups2 = [];
 	$scope.groups3 = [];
 
-	authService.getAuthenticatedUser()
-	    .then(user => $http.get(`${resourceUri}/auth/groups/find-all-mine/${user.email}`))
+    $rootScope.setAuthUser
+	    .then(() => $http.get(`${resourceUri}/auth/groups/find-all-mine/${$rootScope.user.email}`))
 	    .then(response => {
 	        if (response.data.length === 0) {
                 $scope.noGroups = true;
@@ -568,7 +565,7 @@ app.controller('DashboardGeneralActivityCtrl', function($rootScope, $scope, $htt
 });
 
 // Controller in: groups.html
-app.controller('GroupsCtrl', function($rootScope, $scope, $http, $state, $mdDialog, authService) {
+app.controller('GroupsCtrl', function($rootScope, $scope, $http, $state, $mdDialog) {
 
 	$rootScope.isLoading = true;
 	$scope.loading1 = true;
@@ -576,16 +573,16 @@ app.controller('GroupsCtrl', function($rootScope, $scope, $http, $state, $mdDial
 
 	$scope.getMatches = function(searchText) {
 	    return $http.get(`${resourceUri}/auth/groups/search/${searchText}`)
-                  .then(response => {
-                      // Map the response object to the data object.
-                      return response.data;
-                  });
+          .then(response => {
+              // Map the response object to the data object.
+              return response.data;
+          });
 	};
 
-    authService.getAuthenticatedUser()
-        .then(user => $http.get(`${resourceUri}/auth/groups/${user.email}`))
+    $rootScope.setAuthUser
+        .then(() => $http.get(`${resourceUri}/auth/groups/${$rootScope.user.email}`))
 		.then(response => {
-		    console.log(response.data);
+//		    console.log(response.data);
 			$scope.groups = response.data;
 		})
 		.finally(function() {
@@ -595,8 +592,8 @@ app.controller('GroupsCtrl', function($rootScope, $scope, $http, $state, $mdDial
 		});
 
 	$scope.joinGroup = function(idGroup) {
-	    var user = authService.getAuthenticatedUser();
-		$http.post(`${resourceUri}/auth/groups/${idGroup}/join/${user.email}`)
+	    $rootScope.setAuthUser
+            .then(() => $http.post(`${resourceUri}/auth/groups/${idGroup}/join/${$rootScope.user.email}`))
             .then(response => {
                 $state.go("group.general", { idGroup: idGroup }, {});
             });
@@ -638,14 +635,14 @@ app.controller('WorkshopsCtrl', function($rootScope, $scope, $http) {
 });
 
 // Controller in: group-out.html
-app.controller('GroupOutCtrl', function($rootScope, $scope, $http, $state, $stateParams, authService) {
+app.controller('GroupOutCtrl', function($rootScope, $scope, $http, $state, $stateParams) {
 
 	$rootScope.isLoading = true;
 
 	// Injects the group object in the parent scope
-	authService.getAuthenticatedUser()
-	    .then(user => $http.get(`${resourceUri}/auth/groups/${$stateParams.idGroup}/${user.email}`))
-		.then(function(response) {
+	$rootScope.setAuthUser
+	    .then(() => $http.get(`${resourceUri}/auth/groups/${$stateParams.idGroup}/${$rootScope.user.email}`))
+		.then(response => {
 			$scope.group = response.data;
 		}).finally(function() {
 		    // called no matter success or failure
@@ -653,8 +650,8 @@ app.controller('GroupOutCtrl', function($rootScope, $scope, $http, $state, $stat
 		});
 
 	$scope.joinGroup = function(idGroup) {
-	    authService.getAuthenticatedUser()
-	        .then(user => $http.post(`${resourceUri}/auth/groups/${idGroup}/join/${user.email}`))
+	    $rootScope.setAuthUser
+	        .then(() => $http.post(`${resourceUri}/auth/groups/${idGroup}/join/${$rootScope.user.email}`))
 			.then(response => {
 				$state.go("group.general", { idGroup: idGroup }, {});
 			});
@@ -663,13 +660,13 @@ app.controller('GroupOutCtrl', function($rootScope, $scope, $http, $state, $stat
 });
 
 // Controller in: subgroup-out.html
-app.controller('SubgroupOutCtrl', function($rootScope, $scope, $http, $state, $stateParams, authService) {
+app.controller('SubgroupOutCtrl', function($rootScope, $scope, $http, $state, $stateParams) {
 
 	$rootScope.isLoading = true;
 
 	// Injects the subgroup object in the parent scope
-	authService.getAuthenticatedUser()
-	    .then(user => $http.get(`${resourceUri}/auth/subgroups/${$stateParams.idSubgroup}/${user.email}`))
+	$rootScope.setAuthUser
+	    .then(() => $http.get(`${resourceUri}/auth/subgroups/${$stateParams.idSubgroup}/${$rootScope.user.email}`))
 		.then(response => {
 			$scope.subgroup = response.data;
 			$scope.subgroup.description = decodeURIComponent($scope.subgroup.description);
@@ -679,8 +676,8 @@ app.controller('SubgroupOutCtrl', function($rootScope, $scope, $http, $state, $s
 		});
 
 	$scope.joinSubgroup = function(idSubGroup) {
-	    authService.getAuthenticatedUser()
-	        .then($http.post(`${resourceUri}/auth/subgroups/${idSubGroup}/join/${user.email}`))
+	    $rootScope.setAuthUser
+	        .then(() => $http.post(`${resourceUri}/auth/subgroups/${idSubGroup}/join/${$rootScope.user.email}`))
 			.then(response => {
 				$state.go("subgroup.general", { idSubgroup: idSubGroup }, {});
 			});
@@ -689,10 +686,10 @@ app.controller('SubgroupOutCtrl', function($rootScope, $scope, $http, $state, $s
 });
 
 // Controller in: workshop-out.html
-app.controller('WorkshopOutCtrl', function($scope, $http, $stateParams, authService) {
+app.controller('WorkshopOutCtrl', function($rootScope, $scope, $http, $stateParams) {
 
-    authService.getAuthenticatedUser()
-        .then(user => $http.get(`${resourceUri}/auth/workshops/${$stateParams.idWorkshop}/${user.email}`))
+    $rootScope.setAuthUser
+        .then(() => $http.get(`${resourceUri}/auth/workshops/${$stateParams.idWorkshop}/${$rootScope.user.email}`))
         .then(response => {
             $scope.workshop = response.data;
             $scope.workshop.description = decodeURIComponent($scope.workshop.description);
@@ -707,13 +704,13 @@ app.controller('WorkshopOutCtrl', function($scope, $http, $stateParams, authServ
 /*========== Settings controllers ==========*/
 
 // Controller in: settings.profile.html
-app.controller('SettingsProfileCtrl', function($rootScope, $scope, $http, $stateParams, $state, $mdToast, authService) {
+app.controller('SettingsProfileCtrl', function($rootScope, $scope, $http, $stateParams, $state, $mdToast) {
 	var self = this;
 
 	$scope.newLab = false;
 
-	authService.getAuthenticatedUser()
-	    .then(user => $http.get(`${resourceUri}/auth/fabbers/me/profile/${user.email}`))
+	$rootScope.setAuthUser
+	    .then(() => $http.get(`${resourceUri}/auth/fabbers/me/profile/${$rootScope.user.email}`))
 	    .then(response => {
 	        $scope.fabber = response.data;
 	    })
@@ -724,15 +721,15 @@ app.controller('SettingsProfileCtrl', function($rootScope, $scope, $http, $state
 	// autocomplete for labs
 	$scope.getMatches = function(searchText) {
 	    return $http.get(`${resourceUri}/auth/labs/search/${searchText}`)
-                  .then(response => {
-                      // Map the response object to the data object.
-                      return response.data;
-                  });
+          .then(response => {
+              // Map the response object to the data object.
+              return response.data;
+          });
 	};
 
 	$scope.submit = function() {
-		authService.getAuthenticatedUser()
-	    	.then(user => $http.put(`${resourceUri}/auth/fabbers/me/update/${user.email}`, {
+		$rootScope.setAuthUser
+	    	.then(() => $http.put(`${resourceUri}/auth/fabbers/me/update/${$rootScope.user.email}`, {
                     name: $scope.fabber.name,
                     firstName: $scope.fabber.firstName,
                     lastName: $scope.fabber.lastName,
@@ -774,35 +771,35 @@ app.controller('SettingsProfileCtrl', function($rootScope, $scope, $http, $state
 		$rootScope.isLoading = true;
 
 		$http.get('https://api.fablabs.io/v0/labs.json')
-		.then(response => {
-			// submit data
-			$http.post(`${resourceUri}/auth/labs/update-all`, {
-				labs: response.data.labs
-			}).then(function successCallback(response) {
-				console.log("labs updated!");
-				$rootScope.isLoading = false;
+            .then(response => {
+                // submit data
+                $http.post(`${resourceUri}/auth/labs/update-all`, {
+                    labs: response.data.labs
+                }).then(function successCallback(response) {
+                    console.log("labs updated!");
+                    $rootScope.isLoading = false;
 
-				$mdToast.show(
-			      $mdToast.simple()
-			        .textContent('Labs info updated!')
-			        .position("bottom right")
-			        .hideDelay(1500)
-				);
-				// reload current state
-				$state.go($state.current, {}, {reload: true});
-			}, function errorCallback(response) {
-				$rootScope.isLoading = false;
+                    $mdToast.show(
+                      $mdToast.simple()
+                        .textContent('Labs info updated!')
+                        .position("bottom right")
+                        .hideDelay(1500)
+                    );
+                    // reload current state
+                    $state.go($state.current, {}, {reload: true});
+                }, function errorCallback(response) {
+                    $rootScope.isLoading = false;
 
-				$mdToast.show(
-			      $mdToast.simple()
-			        .textContent("Couldn't update labs info :(")
-			        .position("bottom right")
-			        .hideDelay(1500)
-				);
-			});
-		}).finally(function() {
-		    // called no matter success or failure
-		});
+                    $mdToast.show(
+                      $mdToast.simple()
+                        .textContent("Couldn't update labs info :(")
+                        .position("bottom right")
+                        .hideDelay(1500)
+                    );
+                });
+            }).finally(function() {
+                // called no matter success or failure
+            });
 	};
 
 });
@@ -949,7 +946,7 @@ app.controller('GroupActivityCtrl', function($scope, $http, moment) {
 });
 
 // Controller in: group.members.html
-app.controller('GroupMembersCtrl', function($scope, $http, $state, $mdDialog, $mdToast, moment, authService) {
+app.controller('GroupMembersCtrl', function($rootScope, $scope, $http, $state, $mdDialog, $mdToast, moment) {
 
 	// Invite member dialog
 	$scope.addMember = function(ev) {
@@ -974,19 +971,19 @@ app.controller('GroupMembersCtrl', function($scope, $http, $state, $mdDialog, $m
 
 	$scope.leave = function(ev) {
 		var confirm = $mdDialog.confirm()
-        // .title('Are you sure you want to leave this group?')
-        .textContent($scope.group.members.length > 1 ?
-                        'Are you sure you want to leave this group?' :
-                        'You are the last member. If you leave, the group will disappear.')
-        .ariaLabel('Confirmation')
-        .targetEvent(ev)
-        .ok('Leave')
-        .cancel('Cancel');
+            // .title('Are you sure you want to leave this group?')
+            .textContent($scope.group.members.length > 1 ?
+                            'Are you sure you want to leave this group?' :
+                            'You are the last member. If you leave, the group will disappear.')
+            .ariaLabel('Confirmation')
+            .targetEvent(ev)
+            .ok('Leave')
+            .cancel('Cancel');
 
 		$mdDialog.show(confirm)
             .then(() => {
-                authService.getAuthenticatedUser()
-                    .then(user => $http.post(`${resourceUri}/auth/groups/${$scope.group.idGroup}/leave/${user.email}`, { })
+                $rootScope.setAuthUser
+                    .then(() => $http.post(`${resourceUri}/auth/groups/${$scope.group.idGroup}/leave/${$rootScope.user.email}`, { })
                         .then(function successCallback(response) {
                             // redirect
                             $state.go("groups", {}, {reload: true});
@@ -1004,8 +1001,8 @@ app.controller('GroupMembersCtrl', function($scope, $http, $state, $mdDialog, $m
 	};
 
 	$scope.nameCoordinator = function(item) {
-	    authService.getAuthenticatedUser()
-            .then(user => $http.post(`${resourceUri}/auth/groups/${$scope.group.idGroup}/name-coordinator/${user.email}`, JSON.stringify(item))
+	    $rootScope.setAuthUser
+            .then(() => $http.post(`${resourceUri}/auth/groups/${$scope.group.idGroup}/name-coordinator/${$rootScope.user.email}`, JSON.stringify(item))
                 .then(function successCallback(response) {
                     // redirect
                     $state.go($state.current, {}, { reload: true });
@@ -1029,9 +1026,9 @@ app.controller('GroupMembersCtrl', function($scope, $http, $state, $mdDialog, $m
             .cancel('Cancel');
 
 		$mdDialog.show(confirm)
-            .then(function() {
-                authService.getAuthenticatedUser()
-                    .then(user => $http.delete(`${resourceUri}/auth/groups/${$scope.group.idGroup}/members/${item.idGroupMember}/${user.email}`)
+            .then(() => {
+                $rootScope.setAuthUser
+                    .then(() => $http.delete(`${resourceUri}/auth/groups/${$scope.group.idGroup}/members/${item.idGroupMember}/${$rootScope.user.email}`)
                           .then(function successCallback(response) {
                               // redirect
                               $state.go($state.current, {}, { reload: true });
@@ -1081,8 +1078,8 @@ app.controller('GroupSubgroupsCtrl', function($scope, $http, $state, $mdDialog, 
 
 		$mdDialog.show(confirm)
             .then(function() {
-                authService.getAuthenticatedUser()
-                    .then($http.delete(`${resourceUri}/auth/subgroups/${item.idSubGroup}/${user.email}`, {})
+                $rootScope.setAuthUser
+                    .then(() => $http.delete(`${resourceUri}/auth/subgroups/${item.idSubGroup}/${$rootScope.user.email}`, {})
                           .then(function successCallback(response) {
                               // redirect
                               $state.go($state.current, {}, { reload: true });
@@ -1287,7 +1284,7 @@ app.controller('SubgroupActivityCtrl', function($scope, $http, moment) {
 });
 
 //Controller in: subgroup.members.html
-app.controller('SubgroupMembersCtrl', function($scope, $http, $state, $mdDialog, $mdToast, moment, authService) {
+app.controller('SubgroupMembersCtrl', function($rootScope, $scope, $http, $state, $mdDialog, $mdToast, moment) {
 
 	$scope.leave = function(ev) {
 		var confirm = $mdDialog.confirm()
@@ -1302,8 +1299,8 @@ app.controller('SubgroupMembersCtrl', function($scope, $http, $state, $mdDialog,
 
 		$mdDialog.show(confirm)
             .then(function() {
-                authService.getAuthenticatedUser()
-                    .then(user => $http.post(`${resourceUri}/auth/subgroups/${$scope.subgroup.idSubGroup}/leave/${user.email}`, {})
+                $rootScope.setAuthUser
+                    .then(() => $http.post(`${resourceUri}/auth/subgroups/${$scope.subgroup.idSubGroup}/leave/${$rootScope.user.email}`, {})
                           .then(function successCallback(response) {
                               // redirect
                               $state.go("group.general", { idGroup: $scope.subgroup.groupId }, { reload: true });
@@ -1321,8 +1318,8 @@ app.controller('SubgroupMembersCtrl', function($scope, $http, $state, $mdDialog,
 	};
 
 	$scope.nameCoordinator = function(item) {
-	    authService.getAuthenticatedUser()
-	        .then(user => $http.post(`${resourceUri}/auth/subgroups/${$scope.subgroup.idSubGroup}/name-coordinator/${user.email}`, JSON.stringify(item))
+	    $rootScope.setAuthUser
+	        .then(() => $http.post(`${resourceUri}/auth/subgroups/${$scope.subgroup.idSubGroup}/name-coordinator/${$rootScope.user.email}`, JSON.stringify(item))
                   .then(function successCallback(response) {
                       // redirect
                       $state.go($state.current, {}, { reload: true });
@@ -1347,8 +1344,8 @@ app.controller('SubgroupMembersCtrl', function($scope, $http, $state, $mdDialog,
 
 		$mdDialog.show(confirm)
             .then(function() {
-                authService.getAuthenticatedUser()
-                    .then(user => $http.post(`${resourceUri}/auth/subgroups/${$scope.subgroup.idSubGroup}/delete-member/${user.email}`, JSON.stringify(item))
+                $rootScope.setAuthUser
+                    .then(() => $http.post(`${resourceUri}/auth/subgroups/${$scope.subgroup.idSubGroup}/delete-member/${$rootScope.user.email}`, JSON.stringify(item))
                           .then(function successCallback(response) {
                               // redirect
                               $state.go($state.current, {}, { reload: true });
@@ -1420,7 +1417,7 @@ app.controller('SubgroupWorkshopsCtrl', function($scope, $http, $state, $mdDialo
 
 
 // Controller in: subgroup.settings.general.html
-app.controller('SubgroupSettingsGeneralCtrl', function($scope, $http, $state, $mdToast, $mdDialog) {
+app.controller('SubgroupSettingsGeneralCtrl', function($rootScope, $scope, $http, $state, $mdToast, $mdDialog) {
 
 	$scope._subgroup = {};
 	$scope._subgroup.name = $scope.subgroup.name;
@@ -1488,8 +1485,8 @@ app.controller('SubgroupSettingsGeneralCtrl', function($scope, $http, $state, $m
 
 		$mdDialog.show(confirm)
             .then(function() {
-                authService.getAuthenticatedUser()
-                    .then(user => $http.delete(`${resourceUri}/auth/subgroups/${$scope.subgroup.idSubGroup}/${user.email}`)
+                $rootScope.setAuthUser
+                    .then(() => $http.delete(`${resourceUri}/auth/subgroups/${$scope.subgroup.idSubGroup}/${$rootScope.user.email}`)
                           .then(function successCallback(response) {
                               console.log("deleted!");
                               $mdToast.show(
@@ -1515,7 +1512,7 @@ app.controller('SubgroupSettingsGeneralCtrl', function($scope, $http, $state, $m
 });
 
 // Controller in: subgroup.add-workshop.html
-app.controller('SubgroupAddWorkshopCtrl', function($scope, $http, $stateParams, $state, $window, $mdToast, authService) {
+app.controller('SubgroupAddWorkshopCtrl', function($rootScope, $scope, $http, $stateParams, $state, $window, $mdToast) {
 	var self = this;
 
 	$scope.address = {
@@ -1553,10 +1550,9 @@ app.controller('SubgroupAddWorkshopCtrl', function($scope, $http, $stateParams, 
 	};
 
 	$scope.submit = function() {
-		console.log($scope._workshop);
-
-		authService.getAuthenticatedUser()
-		    .then(user => $http.post(`${resourceUri}/auth/workshops/${user.email}`, {
+//		console.log($scope._workshop);
+		$rootScope.setAuthUser
+		    .then(() => $http.post(`${resourceUri}/auth/workshops/${$rootScope.user.email}`, {
                 name: $scope._workshop.name,
                 description: encodeURIComponent($scope._workshop.description),
                 startDate: $scope._workshop.startDate.getDate() + "-" + ($scope._workshop.startDate.getMonth() + 1) + "-" + $scope._workshop.startDate.getFullYear(),
@@ -1672,7 +1668,7 @@ app.controller('WorkshopManagementGeneralCtrl', function($scope, $http, $statePa
 	};
 
 	$scope.submit = function() {
-		console.log($scope._workshop);
+//		console.log($scope._workshop);
 		// submit data
 		$http.put(`${resourceUri}/auth/workshops/${$scope.workshop.idWorkshop}`, {
 			name: $scope._workshop.name,
@@ -1726,30 +1722,30 @@ app.controller('WorkshopManagementGeneralCtrl', function($scope, $http, $statePa
 	        .cancel('Cancel');
 
 		$mdDialog.show(confirm)
-		.then(function() {
-			$http.delete(`${resourceUri}/auth/workshops/${$scope.workshop.idWorkshop}`)
-			.then(function successCallback(response) {
-				console.log("deleted!");
-				$mdToast.show(
-			      $mdToast.simple()
-			        .textContent('Workshop deleted!')
-			        .position("bottom right")
-			        .hideDelay(1500)
-				);
+            .then(function() {
+                $http.delete(`${resourceUri}/auth/workshops/${$scope.workshop.idWorkshop}`)
+                    .then(function successCallback(response) {
+                        console.log("deleted!");
+                        $mdToast.show(
+                          $mdToast.simple()
+                            .textContent('Workshop deleted!')
+                            .position("bottom right")
+                            .hideDelay(1500)
+                        );
 
-				$state.go("subgroup.general", { idSubgroup: $scope.workshop.subGroupId }, {});
-			}, function errorCallback(response) {
-				$mdToast.show(
-			      $mdToast.simple()
-			        .textContent('Something went wrong :(')
-			        .position("bottom right")
-			        .hideDelay(1500)
-				);
-			});
+                        $state.go("subgroup.general", { idSubgroup: $scope.workshop.subGroupId }, {});
+                    }, function errorCallback(response) {
+                        $mdToast.show(
+                          $mdToast.simple()
+                            .textContent('Something went wrong :(')
+                            .position("bottom right")
+                            .hideDelay(1500)
+                        );
+                    });
 
-	    }, function() {
-	      // canceled
-	    });
+            }, function() {
+              // canceled
+            });
 	};
 
 });
@@ -1760,7 +1756,7 @@ app.controller('WorkshopManagementGeneralCtrl', function($scope, $http, $statePa
 
 
 // Controller for: add-group-dialog.tmpl.html
-function AddGroupDialogController($scope, $mdDialog, $http, $state, $mdToast, authService) {
+function AddGroupDialogController($rootScope, $scope, $mdDialog, $http, $state, $mdToast) {
 
 	$scope.actionsDisabled = false;
 
@@ -1773,8 +1769,8 @@ function AddGroupDialogController($scope, $mdDialog, $http, $state, $mdToast, au
 	};
 
 	$scope.submit = function() {
-	    authService.getAuthenticatedUser()
-	        .then(user => $http.post(`${resourceUri}/auth/groups/${user.email}`, {
+	    $rootScope.setAuthUser
+	        .then(() => $http.post(`${resourceUri}/auth/groups/${$rootScope.user.email}`, {
                 name: $scope._group.name,
                 description: encodeURIComponent($scope._group.description)
             }).then(response => {
@@ -1801,7 +1797,7 @@ function AddGroupDialogController($scope, $mdDialog, $http, $state, $mdToast, au
 };
 
 // Controller for: add-subgroup-dialog.tmpl.html
-function AddSubgroupDialogController($scope, $mdDialog, $http, $stateParams, $state, $mdToast, authService) {
+function AddSubgroupDialogController($rootScope, $scope, $mdDialog, $http, $stateParams, $state, $mdToast) {
 
 	$scope.actionsDisabled = false;
 	console.log($stateParams.idGroup);
@@ -1815,9 +1811,9 @@ function AddSubgroupDialogController($scope, $mdDialog, $http, $stateParams, $st
 	};
 
 	$scope.submit = function() {
-		console.log($scope._subgroup);
-		authService.getAuthenticatedUser()
-		    .then(user => $http.post(`${resourceUri}/auth/subgroups/${user.email}`, {
+//		console.log($scope._subgroup);
+		$rootScope.setAuthUser
+		    .then(() => $http.post(`${resourceUri}/auth/subgroups/${$rootScope.user.email}`, {
                 name: $scope._subgroup.name,
                 description: encodeURIComponent($scope._subgroup.description),
                 groupId: $stateParams.idGroup // parent
@@ -2102,8 +2098,8 @@ app.service("authService", function($http, $rootScope) {
             });
     };
 
-    const getAuthenticatedUser = () => Promise.resolve(authenticatedUser != null
-                                        ? authenticatedUser
-                                        : createOrUpdateUser().then(() => authenticatedUser));
+    const getAuthenticatedUser = () => authenticatedUser != null
+                                        ? Promise.resolve(authenticatedUser)
+                                        : createOrUpdateUser().then(() => authenticatedUser);
     return { createOrUpdateUser: createOrUpdateUser, getAuthenticatedUser: getAuthenticatedUser };
 });

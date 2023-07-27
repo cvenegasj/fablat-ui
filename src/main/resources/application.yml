@@ -1,12 +1,4 @@
-server:
-  port: 3000
-
-logging:
-  level:
-    root: INFO
-    org.springframework.web: INFO
-    org.springframework.security: INFO
-    com.auth0.example: TRACE
+spring.profiles.active: dev
 
 spring:
   security:
@@ -25,3 +17,27 @@ spring:
             issuer-uri: https://symbiocreation.auth0.com/
 
 fablat.landing.uri: https://fab.lat
+
+
+---
+spring.config.activate.on-profile: dev
+server.port: 3000
+logging:
+  level:
+    root: INFO
+    org.springframework.web: INFO
+    org.springframework.security: INFO
+    com.auth0.example: TRACE
+
+---
+spring.config.activate.on-profile: prod
+server:
+  port: 5000
+#  use-forward-headers: true
+  forward-headers-strategy: framework
+logging:
+  level:
+    root: ERROR
+#    org.springframework.web: INFO
+#    org.springframework.security: INFO
+#    com.auth0.example: TRACE
