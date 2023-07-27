@@ -1,7 +1,7 @@
 const app = angular.module('FabLatApp', [ 'ui.router', 'ngMaterial', 'ngMessages', 'angularMoment',
     'vsGoogleAutocomplete', 'ngFileUpload', 'cloudinary' ]);
-const resourceUri = 'http://localhost:5000';
-//const resourceUri = 'https://res.fab.lat';
+//const resourceUri = 'http://localhost:5000';
+const resourceUri = 'https://res.fab.lat';
 const landingUri = 'https://fab.lat';
 
 

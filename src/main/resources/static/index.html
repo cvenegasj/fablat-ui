@@ -50,7 +50,7 @@
                     </li>
                 </ul>
                 <span flex></span>
-                <md-menu md-offset="0 50" md-position-mode="target-right target" ng-if="user.firstName && user.lastName">
+                <md-menu md-offset="0 50" md-position-mode="target-right target">
                     <md-button aria-label="Open user avatar menu" class="md-icon-button" style="height: auto; width: auto;" ng-click="$mdMenu.open($event)">
                         <user-avatar md-menu-origin fabber="user" avatar-w="38" avatar-h="38" avatar-font-size="18"></user-avatar>
                     </md-button>
@@ -61,7 +61,7 @@
                             </md-button>
                         </md-menu-item>
                         <md-menu-item>
-                            <md-button ng-click="logout()">
+                            <md-button ng-href="/logout">
                                 Sign out
                             </md-button>
                         </md-menu-item>
