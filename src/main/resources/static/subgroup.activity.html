@@ -5,11 +5,11 @@
 				<md-list class="list-activities" dense flex>
 					<md-list-item class="md-2-line" ng-repeat="item in activities">
 			          <div layout="row" class="md-list-item-text compact" ng-if="item.type === 'ORIGIN'">
-			            <user-avatar ng-init="fabber = { idFabber: item.fabberId, firstName: item.fabberFirstName, lastName: item.fabberLastName }" fabber="fabber" avatar-w="38" avatar-h="38" avatar-font-size="18"></user-avatar>
+			            <user-avatar ng-init="fabber = { idFabber: item.fabberId, name: item.fabberName }" fabber="fabber" avatar-w="38" avatar-h="38" avatar-font-size="18"></user-avatar>
 			            <div>
 			            	<h3>
 				            	<a ui-sref="fabber.groups({ idFabber: item.fabberId })" class="custom-anchor-1 bold">
-									{{ item.fabberFirstName + " " + item.fabberLastName }}
+									{{ item.fabberName }}
 								</a>
 				            	created the subgroup.
 			            	</h3>
@@ -17,11 +17,11 @@
 			            </div>
 			          </div>
 			          <div layout="row" class="md-list-item-text compact" ng-if="item.type === 'USER_JOINED'">
-			            <user-avatar ng-init="fabber = { idFabber: item.fabberId, firstName: item.fabberFirstName, lastName: item.fabberLastName }" fabber="fabber" avatar-w="38" avatar-h="38" avatar-font-size="18"></user-avatar>
+			            <user-avatar ng-init="fabber = { idFabber: item.fabberId, name: item.fabberName }" fabber="fabber" avatar-w="38" avatar-h="38" avatar-font-size="18"></user-avatar>
 			            <div>
 				            <h3>
 				            	<a ui-sref="fabber.groups({ idFabber: item.fabberId })" class="custom-anchor-1 bold">
-									{{ item.fabberFirstName + " " + item.fabberLastName }}
+									{{ item.fabberName }}
 								</a>
 				            	joined the subgroup.
 				            </h3>
@@ -29,11 +29,11 @@
 			            </div>
 			          </div>
 			          <div layout="row" class="md-list-item-text compact" ng-if="item.type === 'USER_LEFT'">
-			            <user-avatar ng-init="fabber = { idFabber: item.fabberId, firstName: item.fabberFirstName, lastName: item.fabberLastName }" fabber="fabber" avatar-w="38" avatar-h="38" avatar-font-size="18"></user-avatar>
+			            <user-avatar ng-init="fabber = { idFabber: item.fabberId, name: item.fabberName }" fabber="fabber" avatar-w="38" avatar-h="38" avatar-font-size="18"></user-avatar>
 			            <div>
 				            <h3>
 				            	<a ui-sref="fabber.groups({ idFabber: item.fabberId })" class="custom-anchor-1 bold">
-									{{ item.fabberFirstName + " " + item.fabberLastName }}
+									{{ item.fabberName }}
 								</a>
 				            	left the subgroup.
 				            </h3>
@@ -41,11 +41,11 @@
 			            </div>
 			          </div>
 			          <div layout="row" class="md-list-item-text compact" ng-if="item.type === 'WORKSHOP_CREATED'">
-			            <user-avatar ng-init="fabber = { idFabber: item.fabberId, firstName: item.fabberFirstName, lastName: item.fabberLastName }" fabber="fabber" avatar-w="38" avatar-h="38" avatar-font-size="18"></user-avatar>
+			            <user-avatar ng-init="fabber = { idFabber: item.fabberId, name: item.fabberName }" fabber="fabber" avatar-w="38" avatar-h="38" avatar-font-size="18"></user-avatar>
 			            <div>
 				            <h3>
 				            	<a ui-sref="fabber.groups({ idFabber: item.fabberId })" class="custom-anchor-1 bold">
-									{{ item.fabberFirstName + " " + item.fabberLastName }}
+									{{ item.fabberName }}
 								</a>
 				            	created a workshop.
 				            </h3>
@@ -53,11 +53,11 @@
 			            </div>
 			          </div>
 			          <div layout="row" class="md-list-item-text compact" ng-if="item.type === 'WORKSHOP_DELETED'">
-			            <user-avatar ng-init="fabber = { idFabber: item.fabberId, firstName: item.fabberFirstName, lastName: item.fabberLastName }" fabber="fabber" avatar-w="38" avatar-h="38" avatar-font-size="18"></user-avatar>
+			            <user-avatar ng-init="fabber = { idFabber: item.fabberId, name: item.fabberName }" fabber="fabber" avatar-w="38" avatar-h="38" avatar-font-size="18"></user-avatar>
 			            <div>
 				            <h3>
 				            	<a ui-sref="fabber.groups({ idFabber: item.fabberId })" class="custom-anchor-1 bold">
-									{{ item.fabberFirstName + " " + item.fabberLastName }}
+									{{ item.fabberName }}
 								</a>
 				            	deleted a workshop.
 				            </h3>

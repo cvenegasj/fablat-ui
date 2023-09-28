@@ -7,7 +7,7 @@
 			<md-list class="list-type-1" dense flex>
 				<md-list-item class="md-2-line" ng-repeat="item in workshop.tutors">
 		          <div class="md-list-item-text compact">
-		            <h3><a ui-sref="fabber({ idFabber: item.fabberId })" class="custom-anchor-1 bold">{{ item.firstName + " "+ item.lastName }}</a></h3>
+		            <h3><a ui-sref="fabber({ idFabber: item.fabberId })" class="custom-anchor-1 bold">{{ item.name }}</a></h3>
 		            <p>{{ item.email }}</p>
 		          </div>
 		          

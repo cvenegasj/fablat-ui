@@ -8,7 +8,7 @@
 				<md-list-item class="md-2-line" ng-repeat="item in subgroup.members">
 		        	<div class="md-list-item-text compact">
 		            	<h3>
-		            		<a ui-sref="fabber.groups({ idFabber: item.fabberId })" class="custom-anchor-1 bold">{{ item.firstName + " " + item.lastName }}</a>
+		            		<a ui-sref="fabber.groups({ idFabber: item.fabberId })" class="custom-anchor-1 bold">{{ item.name }}</a>
 		            		<span class="badge-1" md-colors="{background: 'default-accent-300'}" ng-if="item.isCoordinator">coordinator</span>
 		            	</h3>
 		            	<p>joined <span am-time-ago="item.creationDateTime | UTCToNow"></span></p>

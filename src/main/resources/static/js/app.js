@@ -1988,22 +1988,17 @@ app.directive('userAvatar', ["avatarService", function(avatarService) {
     	                  "#f39c12", "#d35400", "#c0392b", "#bdc3c7", "#7f8c8d"];
 		var i1 = "", i2 = "", nameArray = [];
 
-		if (angular.isDefined(fabber.name)) {
-			i1 = fabber.name.charAt(0).toUpperCase();
-			nameArray = fabber.name.split(" ");
-			if (nameArray.length > 2) {
-				i2 = nameArray[nameArray.length - 1].charAt(0).toUpperCase();
-			} else {
-				i2 = nameArray[1].charAt(0).toUpperCase();
-			}
+		if (fabber.firstName && fabber.lastName) {
+		    i1 = fabber.firstName.charAt(0).toUpperCase();
+            i2 = fabber.lastName.charAt(0).toUpperCase();
 		} else {
-			i1 = fabber.firstName.charAt(0).toUpperCase();
-			nameArray = fabber.lastName.split(" ");
-			if (nameArray.length > 2) {
-				i2 = nameArray[nameArray.length - 1].charAt(0);
-			} else {
-				i2 = nameArray[0].charAt(0).toUpperCase();
-			}
+            i1 = fabber.name.charAt(0).toUpperCase();
+            nameArray = fabber.name.split(" ");
+            if (nameArray.length > 2) {
+                i2 = nameArray[nameArray.length - 1].charAt(0).toUpperCase();
+            } else {
+                i2 = nameArray[1].charAt(0).toUpperCase();
+            }
 		}
 		var initials = i1 + "" + i2;
 		var charIndex = initials.charCodeAt(0) - 48,
