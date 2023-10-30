@@ -6,8 +6,8 @@ const countriesUnsorted = [{"flags":{"png":"https://flagcdn.com/w320/uz.png","sv
 
 const countries = countriesUnsorted.sort((a, b) => a.name.common.localeCompare(b.name.common));
 
-const resourceUri = 'http://localhost:5000';
-//const resourceUri = 'https://res.fab.lat';
+//const resourceUri = 'http://localhost:5000';
+const resourceUri = 'https://res.fab.lat';
 const landingUri = 'https://fab.lat';
 
 
