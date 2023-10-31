@@ -1,5 +1,6 @@
 @import "https://fonts.googleapis.com/css?family=Material+Icons";
-@import "https://fonts.googleapis.com/css?family=Roboto:300,400,500,700,400italic";
+/*@import "https://fonts.googleapis.com/css?family=Roboto:300,400,500,700,400italic";*/
+@import 'https://fonts.googleapis.com/css2?family=Urbanist:ital,wght@0,300;0,400;0,500;0,700;1,400&display=swap';
 
 [ng\:cloak], [ng-cloak], [data-ng-cloak], [x-ng-cloak], .ng-cloak, .x-ng-cloak {
   display: none !important;
@@ -7,10 +8,6 @@
 
 html {
 	text-rendering: optimizeLegibility;
-}
-
-#main-toolbar {
-	box-shadow: 0 2px 3px 0px rgba(0, 0, 0, 0.16);
 }
 
 [ng-click]:hover {
@@ -31,13 +28,14 @@ html {
 	display: block;
 }
 
-#main-navbar li a { 
+#main-navbar li a {
 	display: block;
 	line-height: 64px;
 	font-size: 15px;
 	opacity: .8;
 	padding-left: 15px;
 	padding-right: 15px;
+	color: #d4d4d8;
 }
 
 #main-navbar li a.active {

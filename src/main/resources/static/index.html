@@ -35,10 +35,13 @@
                     <md-icon md-font-set="material-icons" aria-label="Menu">menu</md-icon>
                 </md-button> -->
                 <h1>
-                    <a ui-sref="dashboard.groups">Fab Lat</a>
+                    <a href="https://fab.lat" style="display: flex; align-items: center;">
+                        <img src="/images/fablat_logo.svg" width="40" height="40" alt="Fab Lat logo" />
+                        <span style="margin-left: 13px; color: white;">Fab LaT</span>
+                    </a>
                 </h1>
 
-                <ul id="main-navbar" class="list-unstyled">
+                <ul id="main-navbar" class="list-unstyled" style="margin-left: 20px;">
                     <li>
                         <a ui-sref="dashboard.groups" ui-sref-active="active">Dashboard</a>
                     </li>
@@ -49,7 +52,9 @@
                         <a ui-sref="workshops" ui-sref-active="active">Workshops</a>
                     </li>
                 </ul>
+
                 <span flex></span>
+
                 <md-menu md-offset="0 50" md-position-mode="target-right target">
                     <md-button aria-label="Open user avatar menu" class="md-icon-button" style="height: auto; width: auto;" ng-click="$mdMenu.open($event)">
                         <user-avatar md-menu-origin fabber="user" avatar-w="38" avatar-h="38" avatar-font-size="18"></user-avatar>

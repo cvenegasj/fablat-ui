@@ -32,7 +32,7 @@ logging:
 ---
 spring.config.activate.on-profile: prod
 server:
-  port: 5000
+  port: 5010
 #  use-forward-headers: true
   forward-headers-strategy: framework
 logging:

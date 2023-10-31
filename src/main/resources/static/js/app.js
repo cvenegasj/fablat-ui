@@ -15,14 +15,14 @@ const landingUri = 'https://fab.lat';
 app.config(function($mdThemingProvider, $mdIconProvider, $urlRouterProvider, $stateProvider) {
 
 	$mdThemingProvider.theme('default')
-		.primaryPalette('cyan', {
+		.primaryPalette('purple', {
 			'default': '500',
 			'hue-1': '300',
 			'hue-2': '700',
 			'hue-3': '800'
 		})
 		.accentPalette('pink', {
-			'default': '500',
+			'default': '400',
 			'hue-1': '300',
 			'hue-2': '600',
 			'hue-3': '800'
@@ -659,6 +659,8 @@ app.controller('GroupOutCtrl', function($rootScope, $scope, $http, $state, $stat
 	    $rootScope.setAuthUser
 	        .then(() => $http.post(`${resourceUri}/auth/groups/${idGroup}/join/${$rootScope.user.email}`))
 			.then(response => {
+			    console.log(response);
+			    console.log(idGroup);
 				$state.go("group.general", { idGroup: idGroup }, {});
 			});
 	}
