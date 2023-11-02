@@ -1,9 +1,13 @@
 <div layout-gt-sm="row" layout="column" ng-controller="DashboardCtrl">
+
 	<div style="padding: 15px 35px;" layout="column" flex-gt-sm="25" flex>
 		<div layout="column" layout-align="center center" style="margin-top: 15px; margin-bottom: 35px;">
 			<user-avatar fabber="user" avatar-w="100" avatar-h="100" avatar-font-size="40"></user-avatar>
 			<div class="md-headline" style="margin-top: 5px;">{{ user.name }}</div>
 			<div class="font-14 centered" style="margin-top: 5px;">{{ user.email }}</div>
+			<div ng-if="user.isFabAcademyGrad" class="font-14" style="margin-top: 10px;">
+				Fab Academy Graduate, {{ user.fabAcademyGradYear }}
+			</div>
 <!-- <span class="color-4" ng-if="user.hasAdminGeneralRole">[ADMIN_GENERAL]</span></div>-->
 <!--			<div class="font-14 centered"><span>{{ user.isNomade ? "Fab Nomade" : user.labName }}</span> <span class="color-4" ng-if="user.hasAdminLabRole">[ADMIN_LAB]</span></div>-->
 		</div>

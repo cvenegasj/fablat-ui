@@ -1,10 +1,13 @@
 <div layout-gt-sm="row" layout="column" ng-controller="FabberCtrl">
+
 	<div style="padding: 15px 35px;" layout="column" flex-gt-sm="25" flex>
 		<div layout="column" layout-align="center center" style="margin-top: 15px; margin-bottom: 35px;">
 			<user-avatar fabber="fabberLocal" avatar-w="100" avatar-h="100" avatar-font-size="40"></user-avatar>
 			<div class="md-headline" style="margin-top: 5px;">{{ fabberLocal.firstName }} {{ fabberLocal.lastName }}</div>
-			<div class="font-14"><span>{{ fabberLocal.email }}</span> <span class="color-4" ng-if="user.hasAdminGeneralRole">[ADMIN_GENERAL]</span></div>
-			<div class="font-14"><span>{{ fabberLocal.isNomade ? "Fab Nomade" : fabberLocal.labName }}</span></div>
+			<div class="font-14"><span>{{ fabberLocal.email }}</span></div>
+			<div ng-if="user.isFabAcademyGrad" class="font-14" style="margin-top: 10px;">
+				Fab Academy Graduate, {{ user.fabAcademyGradYear }}
+			</div>
 		</div>
 		<div layout-gt-sm="column" layout="row">
 			<md-card flex layout="column" layout-align="start center" md-theme="darkOrange" class="custom-card-1" layout-fill>
