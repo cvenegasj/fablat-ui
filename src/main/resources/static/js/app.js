@@ -6,8 +6,8 @@ const countriesUnsorted = [{"flags":{"png":"https://flagcdn.com/w320/uz.png","sv
 
 const countries = countriesUnsorted.sort((a, b) => a.name.common.localeCompare(b.name.common));
 
-//const resourceUri = 'http://localhost:5000';
-const resourceUri = 'https://res.fab.lat';
+const resourceUri = 'http://localhost:5000';
+//const resourceUri = 'https://res.fab.lat';
 const landingUri = 'https://fab.lat';
 
 
@@ -1699,6 +1699,8 @@ function AddGroupDialogController($rootScope, $scope, $mdDialog, $http, $state, 
 	};
 
 	$scope.submit = function() {
+	    $scope.actionsDisabled = true;
+
 	    $rootScope.setAuthUser
 	        .then(() => $http.post(`${resourceUri}/auth/groups/${$rootScope.user.email}`, {
                 name: $scope._group.name,
@@ -1730,7 +1732,6 @@ function AddGroupDialogController($rootScope, $scope, $mdDialog, $http, $state, 
 function AddSubgroupDialogController($rootScope, $scope, $mdDialog, $http, $stateParams, $state, $mdToast) {
 
 	$scope.actionsDisabled = false;
-	console.log($stateParams.idGroup);
 
 	$scope.hide = function() {
 	    $mdDialog.hide();
@@ -1741,7 +1742,8 @@ function AddSubgroupDialogController($rootScope, $scope, $mdDialog, $http, $stat
 	};
 
 	$scope.submit = function() {
-//		console.log($scope._subgroup);
+	    $scope.actionsDisabled = true;
+
 		$rootScope.setAuthUser
 		    .then(() => $http.post(`${resourceUri}/auth/subgroups/${$rootScope.user.email}`, {
                 name: $scope._subgroup.name,
