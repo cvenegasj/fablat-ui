@@ -6,8 +6,8 @@ const countriesUnsorted = [{"flags":{"png":"https://flagcdn.com/w320/uz.png","sv
 
 const countries = countriesUnsorted.sort((a, b) => a.name.common.localeCompare(b.name.common));
 
-const resourceUri = 'http://localhost:5000';
-//const resourceUri = 'https://res.fab.lat';
+//const resourceUri = 'http://localhost:5000';
+const resourceUri = 'https://res.fab.lat';
 const landingUri = 'https://fab.lat';
 
 
@@ -978,7 +978,7 @@ app.controller('GroupMembersCtrl', function($rootScope, $scope, $http, $state, $
 });
 
 // Controller in: group.subgroups.html
-app.controller('GroupSubgroupsCtrl', function($scope, $http, $state, $mdDialog, $mdToast) {
+app.controller('GroupSubgroupsCtrl', function($rootScope, $scope, $http, $state, $mdDialog, $mdToast) {
 
 	// New subgroup dialog
 	$scope.addSubgroup = function(ev) {

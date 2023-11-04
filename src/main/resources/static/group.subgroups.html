@@ -6,25 +6,28 @@
 		</div>
 		<div>
 			<div ng-if="group.subGroups.length === 0" class="centered no-data-2" style="margin-top: 15px;">No subgroups created yet.</div>
+
 			<md-list class="list-type-1" dense flex>
 				<md-list-item class="md-2-line" ng-repeat="item in group.subGroups">
 		          <div class="md-list-item-text compact">
 		            <h3><a ui-sref="subgroup.general({ idSubgroup: item.idSubGroup })" class="custom-anchor-1 bold">{{ item.name }}</a></h3>
 		            <p>{{ item.membersCount === 1 ? "1 member" : item.membersCount + " members" }}</p>
 		          </div>
-		          
-		          <md-menu md-position-mode="target-right target" class="md-secondary">
-	      		  	<md-button class="md-icon-button" aria-label="more" ng-click="$mdMenu.open($event)">
-		    			<md-icon md-font-set="material-icons">more_vert</md-icon>
-		    		</md-button>
-			        <md-menu-content width="3">
-			        	<md-menu-item>
-			            	<md-button ng-click="removeSubgroup($event, item)">
-			                	Remove subgroup
-			              	</md-button>
-			            </md-menu-item>
-			      	</md-menu-content>
-			      </md-menu>
+
+					<!-- Menu for coordinator -->
+					  <md-menu ng-if="group.amICoordinator" md-position-mode="target-right target" class="md-secondary">
+						<md-button class="md-icon-button" aria-label="more" ng-click="$mdMenu.open($event)">
+							<md-icon md-font-set="material-icons">more_vert</md-icon>
+						</md-button>
+
+						<md-menu-content width="3">
+							<md-menu-item>
+								<md-button ng-click="removeSubgroup($event, item)">
+									Remove subgroup
+								</md-button>
+							</md-menu-item>
+						</md-menu-content>
+					  </md-menu>
 		        </md-list-item>
 	        </md-list>
 		</div>

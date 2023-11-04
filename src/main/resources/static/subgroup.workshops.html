@@ -12,8 +12,9 @@
 		            <h3><a ui-sref="workshop.general({ idWorkshop: item.idWorkshop })" class="custom-anchor-1 bold">#{{ item.replicationNumber }}:  {{ item.name }}</a></h3>
 		            <p>{{ item.startDateMonth + " " + item.startDateDay }} · {{ item.labName ? item.labName + " · " : "" }} {{ item.isPaid ? item.price + item.currency : "FREE" }}</p>
 		          </div>
-		          
-		          <md-menu md-position-mode="target-right target" class="md-secondary">
+
+					<!-- Menu for coordinator -->
+		          <md-menu ng-if="subgroup.amICoordinator" md-position-mode="target-right target" class="md-secondary">
 	      		  	<md-button class="md-icon-button" aria-label="more" ng-click="$mdMenu.open($event)">
 		    			<md-icon md-font-set="material-icons">more_vert</md-icon>
 		    		</md-button>
