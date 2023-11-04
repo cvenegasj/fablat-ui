@@ -2,7 +2,12 @@
 	<div class="workshop-container-1" >
 		<div class="header" md-colors="{background: 'darkPurple-background-600'}" layout-align="none center">
 			<div>
-				<span>{{ "#" + workshop.replicationNumber }}</span>
+				<div style="margin-bottom: 10px;">
+					<span class="badge-3" md-colors="{background: workshop.type === 'OTHER' ? 'darkCyan-background-400' : workshop.type === 'CONFERENCE' ? 'darkAmber-background-700' : 'darkLime-background-500' }">
+						{{ workshop.type }}
+					</span>
+				</div>
+
 				<h1 class="font-22 bold uppercase">{{ workshop.name }}</h1>
 				<h2 class="font-15 font-weight-400 no-margin">from {{ workshop.groupName }}</h2>
 			</div>
@@ -11,7 +16,7 @@
 		<div class="section" flex>
 			<md-icon md-font-set="material-icons" aria-label="Info" style="position: absolute;">info_outline</md-icon>
 			<div class="section-header">
-				<h2 class="font-16">Workshop details</h2>
+				<h2 class="font-16">Event details</h2>
 			</div>
 			<div class="font-14 section-content">
 				<p style="margin-bottom: 20px; white-space: pre-wrap;">{{ workshop.description | decodeURIComponent }}</p>

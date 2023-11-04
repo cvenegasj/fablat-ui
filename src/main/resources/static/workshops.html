@@ -1,15 +1,17 @@
 <div layout="column" ng-controller="WorkshopsCtrl">
 	<md-toolbar md-whiteframe="1" md-theme="neutral" class="md-hue-1">
     	<div class="md-toolbar-tools" >
-	    	<h2 flex md-truncate>Workshops</h2>
+	    	<h2 flex md-truncate>Events</h2>
 		</div>
 	</md-toolbar>
 
 	<div class="md-padding">
 		<div layout="row" layout-align="center center">
-			<h4 class="md-title">Upcoming workshops</h4>
+			<h4 class="md-title">Upcoming events</h4>
 		</div>
+
 		<div ng-if="workshops.length === 0" class="centered no-data-3" style="margin-top: 25px;">No upcoming workshops.</div>
+
 		<div class="workshop-list-2" flex-offset="15" flex="70" layout="column" ng-if="workshops.length > 0">
 			<div ng-repeat="item in workshops">
 				<div layout="row" class="list-item" ng-init="item.showDetail = false;" ng-click="item.showDetail = !item.showDetail;">
@@ -18,8 +20,16 @@
 						<div class="month uppercase">{{ item.startDateMonth }}</div>
 						<div class="hour">{{ item.startTime }}</div>
 					</div>
+
 					<div class="description" flex="85" layout="column" layout-align="center auto">
-						<div class="font-20 bold workshop-name">{{ item.name }} #{{ item.replicationNumber }}</div>
+						<div>
+							<span class="badge-2" md-colors="{background: item.type === 'OTHER' ? 'darkCyan-background-400' : item.type === 'CONFERENCE' ? 'darkAmber-background-700' : 'darkLime-background-500' }">
+								{{ item.type }}
+							</span>
+						</div>
+
+						<div class="font-20 bold workshop-name">{{ item.name }}</div>
+
 						<div class="font-13">
 							<span ng-if="item.labName">{{ item.labName }} · </span>
 							<span>from {{ item.groupName }} · </span>
@@ -28,11 +38,12 @@
 						</div>
 					</div>
 				</div>
+
 				<div class="workshop-container-2" ng-show="item.showDetail">
 					<div class="section" flex>
 						<md-icon md-font-set="material-icons" aria-label="Info" style="position: absolute;">info_outline</md-icon>
 						<div class="section-header">
-							<h2 class="font-16">Workshop details</h2>
+							<h2 class="font-16">Event details</h2>
 						</div>
 						<div class="font-14 section-content">
 							<p style="margin-bottom: 20px; white-space: pre-wrap;">{{ item.description | decodeURIComponent }}</p>
@@ -92,7 +103,7 @@
 						</div>
 						<div class="font-14 section-content">
 							<div class="tutor" ng-repeat="subitem in item.tutors">
-								{{ subitem.firstName + " " + subitem.lastName }} <br />
+								{{ subitem.name }} <br />
 								<span class="font-13"><i>{{ subitem.email }}</i></span>
 							</div>	
 						</div>

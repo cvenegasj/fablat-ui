@@ -2,11 +2,25 @@
 	<div class="generic-container-1">
 		<form class="custom-form" name="addWorkshopForm" ng-submit="submit()">
 			<div class="header md-subhead">
-				Create a new workshop
+				Create a new event
 			</div>
-			<div class="md-padding">			
+
+			<div class="md-padding">
 				<div layout-gt-sm="row" class="form-group">
-					<label class="control-label" for="name" flex-gt-sm="20">Workshop name</label>
+					<label class="control-label" for="type" flex-gt-sm="20">Type</label>
+
+					<md-input-container md-no-float class="md-block">
+						<md-select name="type" id="type" ng-model="_workshop.type" class="md-no-underline" required aria-label="Event type">
+							<md-option ng-value="item" ng-repeat="item in ['WORKSHOP', 'CONFERENCE', 'OTHER']" ng-selected="$first">
+								{{ item }}
+							</md-option>
+						</md-select>
+					</md-input-container>
+				</div>
+
+				<div layout-gt-sm="row" class="form-group">
+					<label class="control-label" for="name" flex-gt-sm="20">Event name</label>
+
 					<md-input-container md-no-float class="md-block" flex>
 						<input ng-model="_workshop.name" name="name" id="name" md-maxlength="200" required md-autofocus aria-label="Workshop name">
 					
@@ -16,6 +30,7 @@
 			        	</div>
 					</md-input-container>
 				</div>
+
 				<div layout-gt-sm="row" class="form-group">
 					<label class="control-label" for="description" flex-gt-sm="20">Description</label>
 					<md-input-container class="md-block" flex>
@@ -27,6 +42,7 @@
 			       		</div>
 					</md-input-container>
 				</div>
+
 				<div layout-gt-sm="row" class="form-group">
 					<label class="control-label" flex-gt-sm="20">Start date</label>
 					<md-input-container class="md-block" flex>
@@ -37,6 +53,7 @@
 			       		</div>						
 					</md-input-container>
 				</div>
+
 				<div layout-gt-sm="row" class="form-group">
 					<label class="control-label" for="startTimeHours" flex-gt-sm="20">Start time</label>
 					
@@ -67,6 +84,7 @@
 						</md-input-container>
 					</div>
 				</div>
+
 				<div layout-gt-sm="row" class="form-group">
 					<label class="control-label" flex-gt-sm="20">End date</label>
 					<md-input-container class="md-block" flex>
@@ -77,6 +95,7 @@
 			       		</div>	
 					</md-input-container>
 				</div>
+
 				<div layout-gt-sm="row" class="form-group">
 					<label class="control-label" for="end-time-hours" flex-gt-sm="20">End time</label>
 					
@@ -107,6 +126,7 @@
 						</md-input-container>
 					</div>
 				</div>
+
 				<div layout-gt-sm="row" class="form-group">
 					<label class="control-label" flex-gt-sm="20">Price</label>
 			    	<md-input-container class="md-block">
@@ -133,6 +153,7 @@
 					</div>
 			        <span class="bold" style="line-height: 27px; margin-left: 15px;" ng-show="!_workshop.isPaid">FREE</span>
 			    </div>
+
 			    <div layout-gt-sm="row" class="form-group">
 					<label class="control-label" for="facebookUrl" flex-gt-sm="20">Facebook URL</label>
 					<md-input-container md-no-float class="md-block" flex>
@@ -143,6 +164,7 @@
 			        	</div>
 					</md-input-container>
 				</div>
+
 				<div layout-gt-sm="row" class="form-group">
 					<label class="control-label" for="ticketsUrl" flex-gt-sm="20">Tickets URL</label>
 					<md-input-container md-no-float class="md-block" flex>
@@ -154,6 +176,7 @@
 			        	</div>
 					</md-input-container>
 				</div>
+
 				<div layout-gt-sm="row" class="form-group">
 					<label class="control-label" flex-gt-sm="20">Location</label>
 					
@@ -257,7 +280,7 @@
 			<div class="actions" layout="row">
 				<md-button ng-click="goBack()">Cancel</md-button>
 				<span flex></span>
-				<md-button class="md-primary md-raised" type="submit">Save workshop</md-button>
+				<md-button class="md-primary md-raised" type="submit">Save event</md-button>
 			</div>
 		</form>
 	</div>

@@ -1,15 +1,26 @@
 <div class="md-padding" layout="column" flex ng-controller="SubgroupWorkshopsCtrl">
 	<div class="generic-container-1">
 		<div class="header" md-colors="{background: 'darkLightBlue-background-900'}" layout="row" layout-align="none center" style="position: relative;">
-			<div class="title"><span class="bold">{{ subgroup.name }}</span> upcoming workshops:</div>
-			<md-button ui-sref="subgroup.addWorkshop" class="md-raised" style="margin: 0; position: absolute; right: 15px;">New workshop</md-button>
+			<div class="title"><span class="bold">{{ subgroup.name }}</span> upcoming events:</div>
+			<md-button ui-sref="subgroup.addWorkshop" class="md-raised" style="margin: 0; position: absolute; right: 15px;">New event</md-button>
 		</div>
 		<div>
-			<div ng-if="subgroup.workshops.length === 0" class="centered no-data-2" style="margin-top: 15px;">No workshops created yet.</div>
+			<div ng-if="subgroup.workshops.length === 0" class="centered no-data-2" style="margin-top: 15px;">No events created yet.</div>
 			<md-list class="list-type-1" dense flex>
 				<md-list-item class="md-2-line" ng-repeat="item in subgroup.workshops">
 		          <div class="md-list-item-text compact">
-		            <h3><a ui-sref="workshop.general({ idWorkshop: item.idWorkshop })" class="custom-anchor-1 bold">#{{ item.replicationNumber }}:  {{ item.name }}</a></h3>
+					  <div style="margin-bottom: 3px; margin-top: 5px;">
+						<span class="badge-2" md-colors="{background: item.type === 'OTHER' ? 'darkCyan-background-400' : item.type === 'CONFERENCE' ? 'darkAmber-background-700' : 'darkLime-background-500' }">
+							{{ item.type }}
+						</span>
+					  </div>
+
+		            <h3>
+						<a ui-sref="workshop.general({ idWorkshop: item.idWorkshop })" class="custom-anchor-1 bold">
+							{{ item.name }}
+						</a>
+					</h3>
+
 		            <p>{{ item.startDateMonth + " " + item.startDateDay }} · {{ item.labName ? item.labName + " · " : "" }} {{ item.isPaid ? item.price + item.currency : "FREE" }}</p>
 		          </div>
 
@@ -21,7 +32,7 @@
 			        <md-menu-content width="3">
 			        	<md-menu-item>
 			            	<md-button ng-click="removeWorkshop($event, item)">
-			                	Remove workshop
+			                	Remove event
 			              	</md-button>
 			            </md-menu-item>
 			      	</md-menu-content>

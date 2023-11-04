@@ -6,8 +6,8 @@ const countriesUnsorted = [{"flags":{"png":"https://flagcdn.com/w320/uz.png","sv
 
 const countries = countriesUnsorted.sort((a, b) => a.name.common.localeCompare(b.name.common));
 
-//const resourceUri = 'http://localhost:5000';
-const resourceUri = 'https://res.fab.lat';
+const resourceUri = 'http://localhost:5000';
+//const resourceUri = 'https://res.fab.lat';
 const landingUri = 'https://fab.lat';
 
 
@@ -1483,6 +1483,7 @@ app.controller('SubgroupAddWorkshopCtrl', function($rootScope, $scope, $http, $s
 //		console.log($scope._workshop);
 		$rootScope.setAuthUser
 		    .then(() => $http.post(`${resourceUri}/auth/workshops/${$rootScope.user.email}`, {
+		        type: $scope._workshop.type,
                 name: $scope._workshop.name,
                 description: encodeURIComponent($scope._workshop.description),
                 startDate: $scope._workshop.startDate.getDate() + "-" + ($scope._workshop.startDate.getMonth() + 1) + "-" + $scope._workshop.startDate.getFullYear(),

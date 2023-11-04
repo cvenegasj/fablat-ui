@@ -16,11 +16,14 @@
 		<div ng-if="subgroup.mainUrl"><md-icon md-svg-icon="web" class="icon-16"></md-icon>Main URL: <a href="{{ subgroup.mainUrl }}" target="_blank" class="custom-anchor-1">{{ subgroup.mainUrl }}</a></div>
 		<div ng-if="subgroup.secondaryUrl"><md-icon md-svg-icon="web" class="icon-16"></md-icon>Secondary URL: <a href="{{ subgroup.secondaryUrl }}" target="_blank" class="custom-anchor-1">{{ subgroup.secondaryUrl }}</a></div>
 	</div>
+
 	<div class="members">
 		<div layout="row" layout-align="center center">
 			<h4>Members</h4>
 		</div>
+
 		<md-divider></md-divider>
+
 		<div flex layout="row" layout-wrap style="margin-top: 30px;">
 			<div flex-gt-sm="15" flex="25" style="margin-bottom: 10px;" ng-repeat="item in subgroup.members">
 				<a ui-sref="fabber.groups({ idFabber: item.fabberId })">
@@ -31,15 +34,20 @@
 			</div>
 		</div>
 	</div>
+
 	<div class="subgroups">
 		<div layout="row" layout-align="center center">
-			<h4>Workshops</h4>
+			<h4>Events</h4>
 		</div>
+
 		<md-divider></md-divider>
+
 		<div layout="row" layout-align="center center" style="margin-top: 10px;">
-			<md-button class="md-raised md-primary md-hue-1" ui-sref="subgroup.addWorkshop">New workshop</md-button>
+			<md-button class="md-raised md-primary md-hue-1" ui-sref="subgroup.addWorkshop">New event</md-button>
 		</div>
-		<div ng-if="subgroup.workshops.length === 0" class="centered no-data-2" style="margin-top: 10px;">No workshops created yet.</div>
+
+		<div ng-if="subgroup.workshops.length === 0" class="centered no-data-2" style="margin-top: 10px;">No events created yet.</div>
+
 		<div class="workshop-list" flex layout="column" ng-if="subgroup.workshops.length > 0">
 			<div layout="row" class="list-item" ng-repeat="item in subgroup.workshops">
 				<div class="date uppercase" flex="15" layout="column" layout-align="center center" md-colors="{background: 'default-accent-400'}">
@@ -47,8 +55,18 @@
 					<div class="month uppercase">{{ item.startDateMonth }}</div>
 					<div class="hour">{{ item.startTime }}</div>
 				</div>
+
 				<div class="description" flex="85" layout="column" layout-align="center auto">
-					<a ui-sref="workshop.general({ idWorkshop: item.idWorkshop })" class="custom-anchor-1 font-16 bold workshop-name">{{ "#" + item.replicationNumber + ": " + item.name }}</a>
+					<div>
+						<span class="badge-2" md-colors="{background: item.type === 'OTHER' ? 'darkCyan-background-400' : item.type === 'CONFERENCE' ? 'darkAmber-background-700' : 'darkLime-background-500' }">
+							{{ item.type }}
+						</span>
+					</div>
+
+					<a ui-sref="workshop.general({ idWorkshop: item.idWorkshop })" class="custom-anchor-1 font-16 bold workshop-name">
+						{{ item.name }}
+					</a>
+
 					<div class="font-13">
 						<span ng-if="item.labName">{{ item.labName }} · </span>
 						<span ng-if="!item.isPaid">Free</span>

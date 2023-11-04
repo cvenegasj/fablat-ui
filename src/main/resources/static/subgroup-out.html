@@ -26,11 +26,14 @@
 				<div style="margin-bottom: 20px; white-space: pre-wrap;">{{ subgroup.description | decodeURIComponent }}</div>
 				<md-button class="md-raised md-accent" ng-click="joinSubgroup(subgroup.idSubGroup)">Join the subgroup</md-button>
 			</div>
+
 			<div class="members">
 				<div layout="row" layout-align="center center">
 					<h4>Members</h4>
 				</div>
+
 				<md-divider></md-divider>
+
 				<div flex layout="row" layout-wrap style="margin-top: 30px;">
 					<div flex-gt-sm="15" flex="25" style="margin-bottom: 10px;" ng-repeat="item in subgroup.members">
 						<a ui-sref="fabber.groups({ idFabber: item.fabberId })">
@@ -41,12 +44,16 @@
 					</div>
 				</div>
 			</div>
+
 			<div class="subgroups">
 				<div layout="row" layout-align="center center">
-					<h4>Workshops</h4>
+					<h4>Events</h4>
 				</div>
+
 				<md-divider></md-divider>
+
 				<div ng-if="subgroup.workshops.length === 0" class="centered no-data-2" style="margin-top: 10px;">No workshops created yet.</div>
+
 				<div class="workshop-list" flex layout="column" ng-if="subgroup.workshops.length > 0">
 					<div layout="row" class="list-item" ng-repeat="item in subgroup.workshops">
 						<div class="date uppercase" flex="15" layout="column" layout-align="center center" md-colors="{background: 'default-accent-400'}">
@@ -54,8 +61,17 @@
 							<div class="month uppercase">{{ item.startDateMonth }}</div>
 							<div class="hour">{{ item.startTime }}</div>
 						</div>
+
 						<div class="description" flex="85" layout="column" layout-align="center auto">
-							<a ui-sref="workshop.general({ idWorkshop: item.idWorkshop })" class="custom-anchor-1 font-16 bold workshop-name">{{ "#" + item.replicationNumber + ": " + item.name }}</a>
+							<div>
+								<span class="badge-2" md-colors="{background: item.type === 'OTHER' ? 'darkCyan-background-400' : item.type === 'CONFERENCE' ? 'darkAmber-background-700' : 'darkLime-background-500' }">
+									{{ item.type }}
+								</span>
+							</div>
+
+							<a ui-sref="workshop.general({ idWorkshop: item.idWorkshop })" class="custom-anchor-1 font-16 bold workshop-name">
+								{{ "#" + item.replicationNumber + ": " + item.name }}
+							</a>
 							<div class="font-13">
 								<span ng-if="item.labName">{{ item.labName }} · </span>
 								<span ng-if="!item.isPaid">Free</span>
